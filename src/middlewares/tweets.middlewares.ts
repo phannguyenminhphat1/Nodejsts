@@ -10,6 +10,13 @@ const tweetTypes = numberEnumToArray(TweetType)
 const tweetAudience = numberEnumToArray(TweetAudience)
 const mediaTypes = numberEnumToArray(MediaType)
 
+// export enum TweetType {
+//   Tweet,
+//   Retweet,
+//   Comment,
+//   QuoteTweet
+// }
+
 export const createTweetValidator = validate(
   checkSchema({
     type: {
@@ -27,10 +34,12 @@ export const createTweetValidator = validate(
     parent_id: {
       custom: {
         options: (value, { req }) => {
+          // Nếu type là retweet, comment, quotetweet thì parent_id phải là tweet_id của tweet cha
           const type = req.body.type as TweetType
           if ([TweetType.Retweet, TweetType.QuoteTweet, TweetType.Comment].includes(type) && !ObjectId.isValid(value)) {
             throw new Error(TWEETS_MESSAGES.PARENT_ID_MUST_BE_A_VALID_TWEET_ID)
           }
+          // nếu type là tweet thì parent_id phải là null
           if (type === TweetType.Tweet && value !== null) {
             throw new Error(TWEETS_MESSAGES.PARENT_ID_MUST_BE_NULL)
           }
@@ -39,7 +48,9 @@ export const createTweetValidator = validate(
       }
     },
     content: {
-      isString: true,
+      isString: {
+        errorMessage: TWEETS_MESSAGES.CONTENT_MUST_BE_A_STRING
+      },
       custom: {
         options: (value, { req }) => {
           const type = req.body.type as TweetType
@@ -93,11 +104,7 @@ export const createTweetValidator = validate(
       custom: {
         options: (value, { req }) => {
           // Yêu cầu mỗi phần từ trong array là Media Object
-          if (
-            value.some((item: any) => {
-              return typeof item.url !== 'string' || !mediaTypes.includes(item.type)
-            })
-          ) {
+          if (value.some((item: any) => typeof item.url !== 'string' || !mediaTypes.includes(item.type))) {
             throw new Error(TWEETS_MESSAGES.MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT)
           }
           return true
