@@ -94,7 +94,8 @@ export const TWEETS_MESSAGES = {
   CREATE_TWEET_SUCCESS: 'Create tweet success',
   TWEET_AUTHOR_NOT_FOUND: 'Author of the tweet not found',
   TWEET_AUTHOR_IS_BANNED: 'Author of the tweet is banned',
-  GET_TWEET_SUCCESSFULLY: 'Get tweet successfully'
+  GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
+  GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully'
 } as const
 
 export const BOOKMARK_MESSAGES = {
