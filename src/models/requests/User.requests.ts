@@ -59,3 +59,7 @@ export interface ChangePasswordRequestBody {
   password: string
   confirm_password: string
 }
+
+export interface TwitterCircleRequestBody {
+  twitter_circle: string[]
+}

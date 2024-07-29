@@ -11,7 +11,7 @@ import { validate } from '~/utils/validate'
 import { ObjectId } from 'mongodb'
 import { TokenPayload } from '~/models/requests/User.requests'
 import { UserVerifyStatus } from '~/constants/enum'
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { REGEX_USERNAME } from '~/constants/regex'
 
 const passwordSchema: ParamSchema = {
@@ -474,12 +474,6 @@ export const updateMeValidator = validate(
   )
 )
 
-export const getProfileValidator = validate(
-  checkSchema({
-    username: {}
-  })
-)
-
 export const followValidator = validate(
   checkSchema(
     {
@@ -527,6 +521,37 @@ export const changePasswordValidator = validate(
       },
       password: passwordSchema,
       confirm_password: confirmPasswordSchema
+    },
+    ['body']
+  )
+)
+
+export const isUserLoggedInValidator = (middleware: RequestHandler) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (req.headers.authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
+}
+
+export const twitterCircleValidator = validate(
+  checkSchema(
+    {
+      twitter_circle: {
+        isArray: {
+          errorMessage: USERS_MESSAGES.TWITTER_CIRCLE_MUST_BE_AN_ARRAY
+        },
+        custom: {
+          options: (value: [], { req }) => {
+            // Mỗi phần từ trong array là string
+            if (value.some((item: any) => typeof item !== 'string')) {
+              throw new Error(USERS_MESSAGES.TWITTER_CIRCLE_MUST_BE_AN_ARRAY_OF_USERNAME)
+            }
+            return true
+          }
+        }
+      }
     },
     ['body']
   )

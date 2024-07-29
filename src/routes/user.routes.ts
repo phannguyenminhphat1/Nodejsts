@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+  twitterCircleController,
   changePasswordController,
   emailVerifyController,
   followController,
@@ -30,6 +31,7 @@ import {
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  twitterCircleValidator,
   unfollowValidator,
   updateMeValidator,
   verifiedUserValidator
@@ -92,6 +94,14 @@ userRoute.put(
   verifiedUserValidator,
   changePasswordValidator,
   wrapRequestHandlers(changePasswordController)
+)
+
+userRoute.post(
+  '/twitter_circle',
+  accessTokenValidator,
+  verifiedUserValidator,
+  twitterCircleValidator,
+  wrapRequestHandlers(twitterCircleController)
 )
 
 export default userRoute

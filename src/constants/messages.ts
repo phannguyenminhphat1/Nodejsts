@@ -19,26 +19,26 @@ export const USERS_MESSAGES = {
     'Confirm password must be 6-50 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
   CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD: 'Confirm password must be the same as password',
   DATE_OF_BIRTH_MUST_BE_ISO8601: 'Date of birth must be ISO8601',
-  LOGIN_SUCCESS: 'Login success',
-  REGISTER_SUCCESS: 'Register success',
+  LOGIN_SUCCESS: 'Login successfully',
+  REGISTER_SUCCESS: 'Register successfully',
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
   REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
-  LOGOUT_SUCCESS: 'Logout success',
+  LOGOUT_SUCCESS: 'Logout successfully',
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   USER_NOT_FOUND: 'User not found',
   USERNAME_LENGTH: 'Username length must be from 1 to 50',
   EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
-  EMAIL_VERIFY_SUCCESS: 'Email verify success',
-  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
+  EMAIL_VERIFY_SUCCESS: 'Email verify successfully',
+  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email successfully',
   CHECK_EMAIL_TO_RESET_PASSWORD: 'Check email to reset password',
   FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
-  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully',
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
-  RESET_PASSWORD_SUCCESS: 'Reset password success',
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully',
   OLD_PASSWORD_IS_REQUIRED: 'Old password is requires',
-  GET_ME_SUCCESS: 'Get my profile success',
+  GET_ME_SUCCESS: 'Get my profile successfully',
   USER_NOT_VERIFIED: 'User not verified',
   BIO_MUST_BE_STRING: 'Bio must be a string',
   BIO_LENGTH: 'Bio length must be from 1 to 200',
@@ -51,24 +51,29 @@ export const USERS_MESSAGES = {
     'Username must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers',
   IMAGE_URL_MUST_BE_STRING: 'Avatar must be a string',
   IMAGE_URL_LENGTH: 'Avatar length must be from 1 to 200',
-  UPDATE_ME_SUCCESS: 'Update my profile success',
-  GET_PROFILE_SUCCESS: 'Get profile success',
-  FOLLOW_SUCCESS: 'Follow success',
+  UPDATE_ME_SUCCESS: 'Update my profile successfully',
+  GET_PROFILE_SUCCESS: 'Get profile successfully',
+  FOLLOW_SUCCESS: 'Follow successfully',
   INVALID_USER_ID: 'Invalid user id',
   FOLLOWED: 'Followed',
   FOLLOW_USER_ID_IS_REQUIRED: 'Follow user id is required',
   USER_ID_IS_REQUIRED: 'User id is required',
   ALREADY_UNFOLLOWED: 'Already unfollowed',
-  UNFOLLOW_SUCCESS: 'Unfollow success',
+  UNFOLLOW_SUCCESS: 'Unfollow successfully',
   USERNAME_EXISTED: 'Username existed',
   OLD_PASSWORD_NOT_MATCH: 'Old password not match',
-  CHANGE_PASSWORD_SUCCESS: 'Change password success',
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
-  UPLOAD_SUCCESS: 'Upload success',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token success',
-  GET_VIDEO_STATUS_SUCCESS: 'Get video status success',
+  UPLOAD_SUCCESS: 'Upload successfully',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully',
+  GET_VIDEO_STATUS_SUCCESS: 'Get video status successfully',
   IMAGE_NOT_FOUND: 'Image not found',
-  VIDEO_NOT_FOUND: 'Video not found'
+  VIDEO_NOT_FOUND: 'Video not found',
+  TWITTER_CIRCLE_MUST_BE_AN_ARRAY_OF_USERNAME: 'Twitter circle must be an array of username',
+  TWITTER_CIRCLE_IS_REQUIRED: 'Twitter circle is required',
+  TWITTER_CIRCLE_MUST_BE_AN_ARRAY: 'Twitter circle must be an array',
+  ADD_TWITTER_CIRCLE_SUCCESS: 'Add twitter circle successfully',
+  CANNOT_ADD_YOURSELF: 'Cannot add yourself'
 } as const
 
 export const TWEETS_MESSAGES = {
@@ -80,20 +85,28 @@ export const TWEETS_MESSAGES = {
   CONTENT_MUST_BE_EMPTY_STRING: 'Content must be empty string',
   HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
   MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'Mentions must be an array of user id',
+  MENTIONS_MUST_BE_AN_ARRAY_OF_USERNAME: 'Mentions must be an array of username',
   MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be an array of media object',
   INVALID_TWEET_ID: 'Invalid tweet id',
   TWEET_NOT_FOUND: 'Tweet not found',
   TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
   CONTENT_MUST_BE_A_STRING: 'Content must be a string',
-  CREATE_TWEET_SUCCESS: 'Create tweet success'
+  CREATE_TWEET_SUCCESS: 'Create tweet success',
+  TWEET_AUTHOR_NOT_FOUND: 'Author of the tweet not found',
+  TWEET_AUTHOR_IS_BANNED: 'Author of the tweet is banned',
+  GET_TWEET_SUCCESSFULLY: 'Get tweet successfully'
 } as const
 
 export const BOOKMARK_MESSAGES = {
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
-  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
+  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully',
+  INVALID_BOOKMARK_ID: 'Invalid bookmark id',
+  BOOKMARK_NOT_FOUND: 'Bookmark not found'
 }
 
 export const LIKE_MESSAGES = {
   LIKE_SUCCESSFULLY: 'Like successfully',
-  UNLIKE_SUCCESSFULLY: 'Unlike successfully'
+  UNLIKE_SUCCESSFULLY: 'Unlike successfully',
+  INVALID_LIKE_ID: 'Invalid like id',
+  LIKE_NOT_FOUND: 'Like not found'
 }

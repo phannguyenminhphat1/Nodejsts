@@ -5,7 +5,7 @@ import { hashPassword } from '~/utils/crypto'
 import { signToken, verifyToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enum'
 import { RefreshToken } from '~/models/schemas/RefreshToken.schema'
-import { ObjectId } from 'mongodb'
+import { ObjectId, WithId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -452,6 +452,44 @@ class UsersServices {
     return {
       new_access_token,
       new_refresh_token
+    }
+  }
+
+  async twitterCircleService(user_id: string, twitter_circle: string[]) {
+    const list_user = []
+    for (const user of twitter_circle) {
+      const userCircle = await databaseService.users.findOne({
+        username: user
+      })
+
+      if (!userCircle) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND + ':' + ' ' + user,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      if (userCircle._id.equals(user_id)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.CANNOT_ADD_YOURSELF + ':' + ' ' + user,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+
+      list_user.push(userCircle)
+    }
+    await databaseService.users.updateOne(
+      {
+        _id: new ObjectId(user_id)
+      },
+      {
+        $set: {
+          twitter_circle: list_user.map((item) => item._id),
+          updated_at: new Date()
+        }
+      }
+    )
+    return {
+      message: USERS_MESSAGES.ADD_TWITTER_CIRCLE_SUCCESS
     }
   }
 }

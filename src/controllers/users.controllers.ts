@@ -10,6 +10,7 @@ import {
   RegisterRequestBody,
   ResetPasswordRequestBody,
   TokenPayload,
+  TwitterCircleRequestBody,
   UnfollowRequestParams,
   UpdateMeRequestBody
 } from '~/models/requests/User.requests'
@@ -83,6 +84,7 @@ export const emailVerifyController = async (req: Request, res: Response) => {
     result
   })
 }
+
 export const resendEmailVerifyController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await databaseService.users.findOne({
@@ -119,6 +121,7 @@ export const verifyForgotPasswordController = async (req: Request, res: Response
     message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS
   })
 }
+
 export const resetPasswordController = async (
   req: Request<ParamsDictionary, any, ResetPasswordRequestBody>,
   res: Response
@@ -137,6 +140,7 @@ export const getMeController = async (req: Request, res: Response) => {
     result
   })
 }
+
 export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await usersServices.updateMeService(user_id, req.body)
@@ -168,6 +172,7 @@ export const unfollowController = async (req: Request<UnfollowRequestParams>, re
   const result = await usersServices.unfollowService(user_id, followed_user_id)
   return res.json(result)
 }
+
 export const changePasswordController = async (
   req: Request<ParamsDictionary, any, ChangePasswordRequestBody>,
   res: Response
@@ -189,4 +194,14 @@ export const refreshTokenController = async (
     message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
     result
   })
+}
+
+export const twitterCircleController = async (
+  req: Request<ParamsDictionary, any, TwitterCircleRequestBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { twitter_circle } = req.body
+  const result = await usersServices.twitterCircleService(user_id, twitter_circle)
+  return res.json(result)
 }
