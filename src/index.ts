@@ -4,13 +4,14 @@ import { databaseService } from './services/database.services'
 import { defaultErrorHandler } from './middlewares/errors.middlewares'
 import { initFolderImage, initFolderVideo } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
+// import './utils/fake'
 config()
 
 databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
   databaseService.indexFollowers()
+  databaseService.indexTweets()
 })
 const app = express()
 const port = process.env.PORT || 8080

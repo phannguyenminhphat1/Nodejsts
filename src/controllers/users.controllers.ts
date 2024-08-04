@@ -91,16 +91,17 @@ export const resendEmailVerifyController = async (req: Request, res: Response) =
     _id: new ObjectId(user_id)
   })
   if (!user) {
-    res.json({
-      message: USERS_MESSAGES.USER_NOT_FOUND
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.USER_NOT_FOUND,
+      status: HTTP_STATUS.NOT_FOUND
     })
   }
-  if (user?.verify === UserVerifyStatus.Verified) {
-    res.json({
+  if (user.verify === UserVerifyStatus.Verified) {
+    return res.json({
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
     })
   }
-  const result = await usersServices.resendEmailVerifyService(user_id)
+  const result = await usersServices.resendEmailVerifyService(user_id, user.email)
   return res.json({
     message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS,
     result
@@ -108,10 +109,11 @@ export const resendEmailVerifyController = async (req: Request, res: Response) =
 }
 
 export const forgotPasswordController = async (req: Request, res: Response) => {
-  const { _id, verify } = req.user as User
+  const { _id, verify, email } = req.user as User
   const result = await usersServices.forgotPasswordService({
     user_id: (_id as ObjectId).toString(),
-    verify: verify as UserVerifyStatus
+    verify: verify as UserVerifyStatus,
+    email
   })
   return res.json(result)
 }

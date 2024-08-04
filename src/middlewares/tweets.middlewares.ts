@@ -268,6 +268,62 @@ export const tweetIdValidator = validate(
   )
 )
 
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEETS_MESSAGES.INVALID_TYPE
+        }
+      }
+    },
+    ['query']
+  )
+)
+
+export const paginationValidator = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: {
+          errorMessage: TWEETS_MESSAGES.LIMIT_MUST_BE_A_NUMBER
+        },
+        custom: {
+          options: (value, { req }) => {
+            const num = Number(value)
+            if (num < 1 || num > 50) {
+              throw new ErrorWithStatus({
+                message: TWEETS_MESSAGES.LIMIT_LENGTH_MUST_BE_FROM_1_TO_50,
+                status: HTTP_STATUS.BAD_REQUEST
+              })
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: {
+          errorMessage: TWEETS_MESSAGES.PAGE_MUST_BE_A_NUMBER
+        },
+        custom: {
+          options: (value, { req }) => {
+            const num = Number(value)
+            if (num < 1) {
+              throw new ErrorWithStatus({
+                message: TWEETS_MESSAGES.PAGE_LENGTH_MUST_GREATER_THAN_1,
+                status: HTTP_STATUS.BAD_REQUEST
+              })
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)
+
 export const audienceValidator = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const tweet = req.tweet as Tweet

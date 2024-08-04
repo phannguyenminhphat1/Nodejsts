@@ -3,6 +3,7 @@ export const USERS_MESSAGES = {
   NAME_IS_REQUIRED: 'Name is required',
   NAME_MUST_BE_A_STRING: 'Name must be a string',
   NAME_LENGTH_MUST_BE_FROM_3_TO_100: 'Name length must be from 3 to 100',
+  NAME_LENGTH_MUST_BE_FROM_2_TO_100: 'Name length must be from 2 to 100',
   EMAIL_ALREADY_EXISTS: 'Email already exists',
   EMAIL_IS_REQUIRED: 'Email is required',
   EMAIL_IS_INVALID: 'Email is invalid',
@@ -28,6 +29,7 @@ export const USERS_MESSAGES = {
   LOGOUT_SUCCESS: 'Logout successfully',
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   USER_NOT_FOUND: 'User not found',
+  USERS_NOT_FOUND: 'Users not found',
   USERNAME_LENGTH: 'Username length must be from 1 to 50',
   EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
   EMAIL_VERIFY_SUCCESS: 'Email verify successfully',
@@ -47,6 +49,7 @@ export const USERS_MESSAGES = {
   WEBSITE_MUST_BE_STRING: 'Website must be a string',
   WEBSITE_LENGTH: 'Website length must be from 1 to 200',
   USERNAME_MUST_BE_STRING: 'Username must be a string',
+  USERNAME_IS_REQUIRED: 'Username is required',
   USERNAME_INVALID:
     'Username must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers',
   IMAGE_URL_MUST_BE_STRING: 'Avatar must be a string',
@@ -91,11 +94,18 @@ export const TWEETS_MESSAGES = {
   TWEET_NOT_FOUND: 'Tweet not found',
   TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
   CONTENT_MUST_BE_A_STRING: 'Content must be a string',
-  CREATE_TWEET_SUCCESS: 'Create tweet success',
+  CREATE_TWEET_SUCCESSFULLY: 'Create tweet successfully',
   TWEET_AUTHOR_NOT_FOUND: 'Author of the tweet not found',
   TWEET_AUTHOR_IS_BANNED: 'Author of the tweet is banned',
   GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
-  GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully'
+  GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
+  LIMIT_MUST_BE_A_NUMBER: 'Limit must be a number',
+  PAGE_MUST_BE_A_NUMBER: 'Page must be a number',
+  LIMIT_LENGTH_MUST_BE_FROM_1_TO_50: 'Limit must be greater than 1 and less than 50',
+  PAGE_LENGTH_MUST_GREATER_THAN_1: 'Page length must be greater than 1',
+  GET_NEW_FEEDS_FOLLOWING_SUCCESSFULLY: 'Get new feeds following successfully',
+  USER_CURRENTLY_DO_NOT_FOLLOW_ANYONE: 'User currently do not follow anyone, let follows to get new feeds',
+  GET_ALL_NEW_FEEDS_SUCCESSFULLY: 'Get all new feeds sucessfully'
 } as const
 
 export const BOOKMARK_MESSAGES = {
@@ -110,4 +120,17 @@ export const LIKE_MESSAGES = {
   UNLIKE_SUCCESSFULLY: 'Unlike successfully',
   INVALID_LIKE_ID: 'Invalid like id',
   LIKE_NOT_FOUND: 'Like not found'
+}
+
+export const SEARCH_MESSAGES = {
+  SEARCH_TWEETS_SUCCESSFULLY: 'Search tweets successfully',
+  MEDIA_TYPE_MUST_BE_A_STRING: 'Media type must be a string',
+  INVALID_MEDIA_TYPE: "Invalid media type, media type must be 'image' or 'video'",
+  INVALID_PEOPLE_FOLLOW: "Invalid people follow, people follow must be 'on' or 'off'",
+  INVALID_LOCATION: 'Invalid location',
+  CONTENT_MUST_BE_A_STRING: 'Content must be a string',
+  CONTENT_IS_REQUIRED: 'Content is required',
+  CONTENT_LENGTH_MUST_BE_FROM_3_TO_100: 'Content length must be from 3 to 100',
+  SEARCH_USERS_SUCCESSFULLY: 'Search users successfully',
+  SEARCH_HASHTAGS_SUCCESSFULLY: 'Search hashtags successfully'
 }

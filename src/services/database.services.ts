@@ -29,11 +29,19 @@ class DatabaseService {
   }
 
   async indexUsers() {
-    const isExist = await this.users.indexExists(['email_1', 'email_1_password_1', 'username_1'])
+    const isExist = await this.users.indexExists(['email_1', 'email_1_password_1', 'username_1', 'name_text'])
     if (!isExist) {
       this.users.createIndex({ email: 1, password: 1 })
       this.users.createIndex({ email: 1 }, { unique: true })
       this.users.createIndex({ username: 1 }, { unique: true })
+      this.users.createIndex({ name: 'text' }, { default_language: 'none' })
+    }
+  }
+
+  async indexTweets() {
+    const isExist = await this.tweets.indexExists(['content_text'])
+    if (!isExist) {
+      this.tweets.createIndex({ content: 'text' }, { default_language: 'none' })
     }
   }
 

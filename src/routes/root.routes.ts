@@ -5,6 +5,7 @@ import staticRoute from './static.routes'
 import tweetRoutes from './tweet.routes'
 import bookmarksRoutes from './bookmarks.routes'
 import likesRoutes from './likes.routes'
+import searchRoutes from './search.routes'
 const rootRoutes = express.Router()
 
 rootRoutes.use('/users', userRoute)
@@ -13,5 +14,6 @@ rootRoutes.use('/static', staticRoute)
 rootRoutes.use('/tweets', tweetRoutes)
 rootRoutes.use('/likes', likesRoutes)
 rootRoutes.use('/bookmarks', bookmarksRoutes)
+rootRoutes.use('/search', searchRoutes)
 
 export default rootRoutes

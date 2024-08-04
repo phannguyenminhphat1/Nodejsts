@@ -12,6 +12,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { config } from 'dotenv'
 import { Follower } from '~/models/schemas/Followers.schema'
 import axios from 'axios'
+import { sendForgotPasswordEmail, sendVerifyEmail, sendVerifyRegisterEmail } from '~/utils/email'
 config()
 
 class UsersServices {
@@ -208,6 +209,9 @@ class UsersServices {
     await databaseService.refreshToken.insertOne(
       new RefreshToken({ token: refreshToken, user_id: new ObjectId(user_id), exp, iat })
     )
+
+    // Xong thì gửi mail về cho người dùng
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return {
       result,
       accessToken,
@@ -251,8 +255,9 @@ class UsersServices {
     }
   }
 
-  async resendEmailVerifyService(user_id: string) {
+  async resendEmailVerifyService(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
+    await sendVerifyRegisterEmail(email, email_verify_token)
     return await databaseService.users.updateOne(
       {
         _id: new ObjectId(user_id)
@@ -266,19 +271,31 @@ class UsersServices {
     )
   }
 
-  async forgotPasswordService({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPasswordService({
+    user_id,
+    verify,
+    email
+  }: {
+    user_id: string
+    verify: UserVerifyStatus
+    email: string
+  }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
-    await databaseService.users.updateOne(
-      {
-        _id: new ObjectId(user_id)
-      },
-      {
-        $set: {
-          forgot_password_token,
-          updated_at: new Date()
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: new ObjectId(user_id)
+        },
+        {
+          $set: {
+            forgot_password_token,
+            updated_at: new Date()
+          }
         }
-      }
-    )
+      ),
+      sendForgotPasswordEmail(email, forgot_password_token)
+    ])
+
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
     }
