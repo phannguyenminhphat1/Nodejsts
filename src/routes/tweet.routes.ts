@@ -17,6 +17,13 @@ import { accessTokenValidator, isUserLoggedInValidator, verifiedUserValidator } 
 import { wrapRequestHandlers } from '~/utils/handlers'
 const tweetRoutes = express.Router()
 
+/**
+ * Description: Create Tweet
+ * Path: /create-tweet
+ * Method: POST
+ * Header: {Authorization: Bearer <access_token>}
+ * Middlewares: accessTokenValidator, verifiedUserValidator,createTweetValidator
+ */
 tweetRoutes.post(
   '/create-tweet',
   accessTokenValidator,
@@ -77,6 +84,7 @@ tweetRoutes.get(
   wrapRequestHandlers(getNewFeedsFollowingController)
 )
 
+// Chưa xong
 tweetRoutes.get(
   '/new-feeds/all',
   paginationValidator,

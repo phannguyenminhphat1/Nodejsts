@@ -6,6 +6,14 @@ import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users
 import { wrapRequestHandlers } from '~/utils/handlers'
 const searchRoutes = express.Router()
 
+/**
+ * Description: Search Tweets
+ * Path: /
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Middlewares: paginationValidator, verifiedUserValidator, accessTokenValidator, advancedSearchValidator
+ * Query: {limit, page, content, media_type?, people_follow? }
+ */
 searchRoutes.get(
   '/',
   accessTokenValidator,
@@ -15,6 +23,14 @@ searchRoutes.get(
   wrapRequestHandlers(advancedSearchController)
 )
 
+/**
+ * Description: Search Users
+ * Path: /search-users
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Middlewares: paginationValidator, verifiedUserValidator, accessTokenValidator, searchUsersValidator
+ * Query: {limit, page, name, location?, people_follow? }
+ */
 searchRoutes.get(
   '/search-users',
   accessTokenValidator,

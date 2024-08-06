@@ -81,7 +81,8 @@ export const emailVerifyController = async (req: Request, res: Response) => {
   const result = await usersServices.verifyEmailService(user_id)
   return res.json({
     message: USERS_MESSAGES.EMAIL_VERIFY_SUCCESS,
-    result
+    access_token: result.access_token,
+    refresh_token: result.refresh_token
   })
 }
 
@@ -101,10 +102,9 @@ export const resendEmailVerifyController = async (req: Request, res: Response) =
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
     })
   }
-  const result = await usersServices.resendEmailVerifyService(user_id, user.email)
+  await usersServices.resendEmailVerifyService(user_id, user.email)
   return res.json({
-    message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS,
-    result
+    message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
   })
 }
 

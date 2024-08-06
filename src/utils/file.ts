@@ -25,7 +25,7 @@ export const handleUploadImage = async (req: Request, res: Response, next: NextF
     uploadDir: UPLOAD_IMAGE_TEMP_DIR,
     maxFiles: 4,
     keepExtensions: true,
-    maxFileSize: 300 * 1024,
+    maxFileSize: 300 * 1024, //300KB
     maxTotalFileSize: 300 * 1024 * 4,
     filter: function ({ name, originalFilename, mimetype }) {
       const valid = name === 'image' && Boolean(mimetype?.includes('image/'))
@@ -54,7 +54,6 @@ export const handleUploadVideo = async (req: Request, res: Response, next: NextF
     uploadDir: UPLOAD_VIDEO_DIR,
     maxFiles: 1,
     maxFileSize: 50 * 1024 * 1024,
-
     filter: function ({ name, originalFilename, mimetype }) {
       const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
       if (!valid) {
@@ -77,9 +76,8 @@ export const handleUploadVideo = async (req: Request, res: Response, next: NextF
         const ext = getExtension(video.originalFilename as string)
         fs.renameSync(video.filepath, video.filepath + '.' + ext)
         video.newFilename = video.newFilename + '.' + ext
+        video.filepath = video.filepath + '.' + ext
       })
-      console.log(videos)
-
       resolve(files.video as File[])
     })
   })

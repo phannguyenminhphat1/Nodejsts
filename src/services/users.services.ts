@@ -140,6 +140,7 @@ class UsersServices {
       })
     }
     const user = await databaseService.users.findOne({ email: userInfo.email })
+    // Nếu tồn tại thì cho login vô bth
     if (user) {
       const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
         user_id: user._id.toString(),
@@ -155,7 +156,9 @@ class UsersServices {
         newUser: 0,
         verify: user.verify
       }
-    } else {
+    }
+    // Còn không thì tạo mới với password random
+    else {
       const password = Math.random().toString(36).substring(2, 15)
       const data = await this.userRegisterService({
         email: userInfo.email,
@@ -169,17 +172,17 @@ class UsersServices {
   }
 
   async userLoginService({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
-    const [accessToken, refreshToken] = await this.signAccessTokenAndRefreshToken({
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
       user_id: user_id.toString(),
       verify
     })
-    const { exp, iat } = await this.decodeRefreshToken(refreshToken)
+    const { exp, iat } = await this.decodeRefreshToken(refresh_token)
     await databaseService.refreshToken.insertOne(
-      new RefreshToken({ token: refreshToken, user_id: new ObjectId(user_id), exp, iat })
+      new RefreshToken({ token: refresh_token, user_id: new ObjectId(user_id), exp, iat })
     )
     return {
-      accessToken,
-      refreshToken
+      access_token,
+      refresh_token
     }
   }
 
