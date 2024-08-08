@@ -134,3 +134,7 @@ export const SEARCH_MESSAGES = {
   SEARCH_USERS_SUCCESSFULLY: 'Search users successfully',
   SEARCH_HASHTAGS_SUCCESSFULLY: 'Search hashtags successfully'
 }
+
+export const CONVERSATIONS_MESSAGES = {
+  GET_CONVERSATIONS_SUCCESSFULLY: 'Get conversations successfully'
+}

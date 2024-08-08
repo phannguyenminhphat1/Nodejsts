@@ -6,6 +6,7 @@ import tweetRoutes from './tweet.routes'
 import bookmarksRoutes from './bookmarks.routes'
 import likesRoutes from './likes.routes'
 import searchRoutes from './search.routes'
+import conversationsRoutes from './conversations.routes'
 const rootRoutes = express.Router()
 
 rootRoutes.use('/users', userRoute)
@@ -15,5 +16,6 @@ rootRoutes.use('/tweets', tweetRoutes)
 rootRoutes.use('/likes', likesRoutes)
 rootRoutes.use('/bookmarks', bookmarksRoutes)
 rootRoutes.use('/search', searchRoutes)
+rootRoutes.use('/conversations', conversationsRoutes)
 
 export default rootRoutes
