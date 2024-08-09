@@ -85,12 +85,18 @@ tweetRoutes.get(
 )
 
 // Chưa xong
+/**
+ * Description: Get all new feeds
+ * Path: /new-feeds/all
+ * Method: GET
+ * Header: {Authorization?: Bearer <access_token>}
+ * Query: {limit: number, page:number, tweet_type: TweetType}
+ */
 tweetRoutes.get(
   '/new-feeds/all',
+  accessTokenValidator,
+  verifiedUserValidator,
   paginationValidator,
-  isUserLoggedInValidator(accessTokenValidator),
-  isUserLoggedInValidator(verifiedUserValidator),
-  audienceValidator,
   wrapRequestHandlers(getAllNewFeedsController)
 )
 

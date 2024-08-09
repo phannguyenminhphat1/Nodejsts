@@ -9,8 +9,117 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import User from '~/models/schemas/User.schema'
 import { TweetType } from '~/constants/enum'
+import { LookupStageAggregationsType, ProjecttionStageAggregationsType } from '~/models/Other'
 
 export class TweetsService {
+  private users_lookup: LookupStageAggregationsType = {
+    from: 'users',
+    localField: 'user_id',
+    foreignField: '_id',
+    as: 'user'
+  }
+  private hashtags_lookup: LookupStageAggregationsType = {
+    from: 'hashtags',
+    localField: 'hashtags',
+    foreignField: '_id',
+    as: 'hashtags'
+  }
+  private mentions_lookup: LookupStageAggregationsType = {
+    from: 'users',
+    localField: 'mentions',
+    foreignField: '_id',
+    as: 'mentions'
+  }
+  private bookmarks_lookup: LookupStageAggregationsType = {
+    from: 'bookmarks',
+    localField: '_id',
+    foreignField: 'tweet_id',
+    as: 'bookmarks'
+  }
+
+  private likes_lookup: LookupStageAggregationsType = {
+    from: 'likes',
+    localField: '_id',
+    foreignField: 'tweet_id',
+    as: 'likes'
+  }
+  private tweets_children_lookup: LookupStageAggregationsType = {
+    from: 'tweets',
+    localField: '_id',
+    foreignField: 'parent_id',
+    as: 'tweet_children'
+  }
+
+  private add_fields_stage = {
+    bookmarks: {
+      $size: '$bookmarks'
+    },
+    likes: {
+      $size: '$likes'
+    },
+    retweets_count: {
+      $size: {
+        $filter: {
+          input: '$tweet_children',
+          as: 'item',
+          cond: {
+            $eq: ['$$item.type', TweetType.Retweet]
+          }
+        }
+      }
+    },
+    comments_count: {
+      $size: {
+        $filter: {
+          input: '$tweet_children',
+          as: 'item',
+          cond: {
+            $eq: ['$$item.type', TweetType.Comment]
+          }
+        }
+      }
+    },
+    quotes_count: {
+      $size: {
+        $filter: {
+          input: '$tweet_children',
+          as: 'item',
+          cond: {
+            $eq: ['$$item.type', TweetType.QuoteTweet]
+          }
+        }
+      }
+    }
+  }
+
+  private add_fields_stage_mentions = {
+    mentions: {
+      $map: {
+        input: '$mentions',
+        as: 'mention',
+        in: {
+          _id: '$$mention._id',
+          name: '$$mention.name',
+          username: '$$mention.username',
+          email: '$$mention.email'
+        }
+      }
+    }
+  }
+
+  private user_projection: ProjecttionStageAggregationsType = {
+    email_verify_token: 0,
+    forgot_password_token: 0,
+    verify: 0,
+    password: 0,
+    created_at: 0,
+    updated_at: 0,
+    twitter_circle: 0,
+    website: 0,
+    location: 0,
+    cover_photo: 0
+  }
+
   async checkAndCreateHashtag(hashtags: string[]) {
     const hashtagsDocument = await Promise.all(
       hashtags.map((hashtag) =>
@@ -122,103 +231,25 @@ export class TweetsService {
           }
         },
         {
-          $lookup: {
-            from: 'hashtags',
-            localField: 'hashtags',
-            foreignField: '_id',
-            as: 'hashtags'
-          }
+          $lookup: this.hashtags_lookup
         },
         {
-          $lookup: {
-            from: 'users',
-            localField: 'mentions',
-            foreignField: '_id',
-            as: 'mentions'
-          }
+          $lookup: this.mentions_lookup
         },
         {
-          $addFields: {
-            mentions: {
-              $map: {
-                input: '$mentions',
-                as: 'mention',
-                in: {
-                  _id: '$$mention._id',
-                  name: '$$mention.name',
-                  username: '$$mention.username',
-                  email: '$$mention.email'
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage_mentions
         },
         {
-          $lookup: {
-            from: 'bookmarks',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'bookmarks'
-          }
+          $lookup: this.bookmarks_lookup
         },
         {
-          $lookup: {
-            from: 'likes',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'likes'
-          }
+          $lookup: this.likes_lookup
         },
         {
-          $lookup: {
-            from: 'tweets',
-            localField: '_id',
-            foreignField: 'parent_id',
-            as: 'tweet_children'
-          }
+          $lookup: this.tweets_children_lookup
         },
         {
-          $addFields: {
-            bookmarks: {
-              $size: '$bookmarks'
-            },
-            likes: {
-              $size: '$likes'
-            },
-            retweets_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Retweet]
-                  }
-                }
-              }
-            },
-            comments_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Comment]
-                  }
-                }
-              }
-            },
-            quotes_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.QuoteTweet]
-                  }
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage
         },
         {
           $project: {
@@ -303,12 +334,7 @@ export class TweetsService {
           }
         },
         {
-          $lookup: {
-            from: 'users',
-            localField: 'user_id',
-            foreignField: '_id',
-            as: 'user'
-          }
+          $lookup: this.users_lookup
         },
         {
           $unwind: {
@@ -355,119 +381,30 @@ export class TweetsService {
           $limit: limit
         },
         {
-          $lookup: {
-            from: 'hashtags',
-            localField: 'hashtags',
-            foreignField: '_id',
-            as: 'hashtags'
-          }
+          $lookup: this.hashtags_lookup
         },
         {
-          $lookup: {
-            from: 'users',
-            localField: 'mentions',
-            foreignField: '_id',
-            as: 'mentions'
-          }
+          $lookup: this.mentions_lookup
         },
         {
-          $addFields: {
-            mentions: {
-              $map: {
-                input: '$mentions',
-                as: 'mention',
-                in: {
-                  _id: '$$mention._id',
-                  name: '$$mention.name',
-                  username: '$$mention.username',
-                  email: '$$mention.email'
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage_mentions
         },
         {
-          $lookup: {
-            from: 'bookmarks',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'bookmarks'
-          }
+          $lookup: this.bookmarks_lookup
         },
         {
-          $lookup: {
-            from: 'likes',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'likes'
-          }
+          $lookup: this.likes_lookup
         },
         {
-          $lookup: {
-            from: 'tweets',
-            localField: '_id',
-            foreignField: 'parent_id',
-            as: 'tweet_children'
-          }
+          $lookup: this.tweets_children_lookup
         },
         {
-          $addFields: {
-            bookmarks: {
-              $size: '$bookmarks'
-            },
-            likes: {
-              $size: '$likes'
-            },
-            retweets_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Retweet]
-                  }
-                }
-              }
-            },
-            comments_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Comment]
-                  }
-                }
-              }
-            },
-            quotes_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.QuoteTweet]
-                  }
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage
         },
         {
           $project: {
             tweet_children: 0,
-            user: {
-              email_verify_token: 0,
-              forgot_password_token: 0,
-              verify: 0,
-              password: 0,
-              created_at: 0,
-              updated_at: 0,
-              twitter_circle: 0,
-              website: 0,
-              location: 0,
-              cover_photo: 0
-            }
+            user: this.user_projection
           }
         }
       ])
@@ -552,46 +489,38 @@ export class TweetsService {
     return { tweets, total: total[0]?.total || 0 }
   }
 
-  // Chưa có làm
   async getAllNewFeedsService({ user_id, limit, page }: { user_id?: string; limit: number; page: number }) {
     const current_user_id = new ObjectId(user_id)
-    const followed_user_id = await databaseService.followers
-      .find(
+    const matchStage = {
+      $or: [
         {
-          user_id: current_user_id
+          audience: 0
         },
         {
-          projection: {
-            followed_user_id: 1
-          }
+          $and: [
+            {
+              audience: 1
+            },
+            {
+              $or: [
+                {
+                  'user.twitter_circle': {
+                    $in: [current_user_id]
+                  }
+                },
+                {
+                  user_id: current_user_id
+                }
+              ]
+            }
+          ]
         }
-      )
-      .toArray()
-    if (followed_user_id.length < 1) {
-      throw new ErrorWithStatus({
-        message: TWEETS_MESSAGES.USER_CURRENTLY_DO_NOT_FOLLOW_ANYONE,
-        status: HTTP_STATUS.NOT_FOUND
-      })
+      ]
     }
-    const ids = followed_user_id.map((item) => item.followed_user_id)
-    ids.push(current_user_id)
-
     const tweets = await databaseService.tweets
       .aggregate([
         {
-          $match: {
-            user_id: {
-              $in: ids
-            }
-          }
-        },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'user_id',
-            foreignField: '_id',
-            as: 'user'
-          }
+          $lookup: this.users_lookup
         },
         {
           $unwind: {
@@ -599,36 +528,11 @@ export class TweetsService {
           }
         },
         {
-          $match: {
-            $or: [
-              {
-                audience: 0
-              },
-              {
-                $and: [
-                  {
-                    audience: 1
-                  },
-                  {
-                    $or: [
-                      {
-                        'user.twitter_circle': {
-                          $in: [current_user_id]
-                        }
-                      },
-                      {
-                        user_id: current_user_id
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+          $match: matchStage
         },
         {
           $sort: {
-            created_at: -1 // Sắp xếp theo ngày tạo giảm dần, tweet mới nhất lên trước
+            created_at: -1
           }
         },
         {
@@ -638,124 +542,34 @@ export class TweetsService {
           $limit: limit
         },
         {
-          $lookup: {
-            from: 'hashtags',
-            localField: 'hashtags',
-            foreignField: '_id',
-            as: 'hashtags'
-          }
+          $lookup: this.hashtags_lookup
         },
         {
-          $lookup: {
-            from: 'users',
-            localField: 'mentions',
-            foreignField: '_id',
-            as: 'mentions'
-          }
+          $lookup: this.mentions_lookup
         },
         {
-          $addFields: {
-            mentions: {
-              $map: {
-                input: '$mentions',
-                as: 'mention',
-                in: {
-                  _id: '$$mention._id',
-                  name: '$$mention.name',
-                  username: '$$mention.username',
-                  email: '$$mention.email'
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage_mentions
         },
         {
-          $lookup: {
-            from: 'bookmarks',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'bookmarks'
-          }
+          $lookup: this.bookmarks_lookup
         },
         {
-          $lookup: {
-            from: 'likes',
-            localField: '_id',
-            foreignField: 'tweet_id',
-            as: 'likes'
-          }
+          $lookup: this.likes_lookup
         },
         {
-          $lookup: {
-            from: 'tweets',
-            localField: '_id',
-            foreignField: 'parent_id',
-            as: 'tweet_children'
-          }
+          $lookup: this.tweets_children_lookup
         },
         {
-          $addFields: {
-            bookmarks: {
-              $size: '$bookmarks'
-            },
-            likes: {
-              $size: '$likes'
-            },
-            retweets_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Retweet]
-                  }
-                }
-              }
-            },
-            comments_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.Comment]
-                  }
-                }
-              }
-            },
-            quotes_count: {
-              $size: {
-                $filter: {
-                  input: '$tweet_children',
-                  as: 'item',
-                  cond: {
-                    $eq: ['$$item.type', TweetType.QuoteTweet]
-                  }
-                }
-              }
-            }
-          }
+          $addFields: this.add_fields_stage
         },
         {
           $project: {
             tweet_children: 0,
-            user: {
-              email_verify_token: 0,
-              forgot_password_token: 0,
-              verify: 0,
-              password: 0,
-              created_at: 0,
-              updated_at: 0,
-              twitter_circle: 0,
-              website: 0,
-              location: 0,
-              cover_photo: 0
-            }
+            user: this.user_projection
           }
         }
       ])
       .toArray()
-
     const tweet_ids = tweets.map((item) => item._id as ObjectId)
     const date = new Date()
     const inc = { user_views: 1 }
@@ -776,19 +590,7 @@ export class TweetsService {
       await databaseService.tweets
         .aggregate([
           {
-            $match: {
-              user_id: {
-                $in: ids
-              }
-            }
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'user_id',
-              foreignField: '_id',
-              as: 'user'
-            }
+            $lookup: this.users_lookup
           },
           {
             $unwind: {
@@ -796,32 +598,7 @@ export class TweetsService {
             }
           },
           {
-            $match: {
-              $or: [
-                {
-                  audience: 0
-                },
-                {
-                  $and: [
-                    {
-                      audience: 1
-                    },
-                    {
-                      $or: [
-                        {
-                          'user.twitter_circle': {
-                            $in: [current_user_id]
-                          }
-                        },
-                        {
-                          user_id: current_user_id
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
+            $match: matchStage
           },
           { $count: 'total' }
         ])
