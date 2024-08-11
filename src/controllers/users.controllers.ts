@@ -20,9 +20,8 @@ import User from '~/models/schemas/User.schema'
 import { databaseService } from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enum'
-import { config } from 'dotenv'
 import { ErrorWithStatus } from '~/models/Errors'
-config()
+import { envConfig } from '~/constants/config'
 
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
@@ -43,7 +42,7 @@ export const oauthController = async (req: Request, res: Response) => {
   if (result instanceof ErrorWithStatus) {
     return res.status(result.status).json({ message: result.message })
   }
-  const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify}`
+  const urlRedirect = `${envConfig.clientRedirectCallback}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify}`
   return res.redirect(urlRedirect)
 }
 

@@ -13,8 +13,7 @@ import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
 import YAML from 'yaml'
 import path from 'path'
-
-config()
+import { envConfig } from './constants/config'
 
 databaseService.connect().then(() => {
   databaseService.indexUsers()
@@ -24,7 +23,7 @@ databaseService.connect().then(() => {
 })
 const app = express()
 const httpServer = createServer(app)
-const port = process.env.PORT || 8080
+const port = envConfig.port
 const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 const swaggerDocument = YAML.parse(file)
 initFolderImage()

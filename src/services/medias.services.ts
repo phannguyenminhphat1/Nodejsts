@@ -1,16 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import path from 'node:path'
 import sharp from 'sharp'
-import { UPLOAD_IMAGE_DIR, UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
+import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import { getNameFromFullname, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import fsPromise from 'fs/promises'
-import fs from 'fs'
-import { isProduction } from '~/constants/config'
-import { config } from 'dotenv'
 import { MediaType } from '~/constants/enum'
 import { Media } from '~/models/Other'
 import { uploadFileToS3 } from '~/utils/s3'
-config()
 class MediasServices {
   async uploadImageService(req: Request, res: Response, next: NextFunction) {
     const mime = (await import('mime')).default

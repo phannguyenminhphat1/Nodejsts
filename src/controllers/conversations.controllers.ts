@@ -1,13 +1,9 @@
 import { Request, Response } from 'express'
-import { ParamsDictionary } from 'express-serve-static-core'
-import { config } from 'dotenv'
 import { TokenPayload } from '~/models/requests/User.requests'
 import conversationsServices from '~/services/conversations.services'
 import { CONVERSATIONS_MESSAGES } from '~/constants/messages'
 import { PaginationRequestQuery } from '~/models/requests/Tweet.requests'
 import { GetConversationsRequestParams } from '~/models/requests/Conversation.requests'
-
-config()
 
 export const getConversationsController = async (
   req: Request<GetConversationsRequestParams, any, any, PaginationRequestQuery>,
