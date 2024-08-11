@@ -193,7 +193,7 @@ class UsersServices {
       verify: UserVerifyStatus.Unverified
     })
 
-    const result = await databaseService.users.insertOne(
+    await databaseService.users.insertOne(
       new User({
         ...payload,
         _id: user_id,
@@ -216,7 +216,6 @@ class UsersServices {
     // Xong thì gửi mail về cho người dùng
     await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return {
-      result,
       accessToken,
       refreshToken,
       email_verify_token

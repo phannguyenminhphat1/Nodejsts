@@ -1,0 +1,1868 @@
+openapi: 3.0.3
+info:
+  title: Swagger Twitter-Clone
+  description: |-
+    This is a sample Twitter Clone Server based on the OpenAPI 3.0 specification. This project replicates some key features of Twitter, including tweet creation, image upload, and user management. You can explore and interact with the API to understand its capabilities and help us enhance it further.
+    For more information, visit [https://twitter-clone.example.com](https://twitter-clone.example.com). We are continuously working to improve the API and add new functionalities. contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Users
+    description: Operations about user
+  - name: Tweets
+    description: Operations about tweet
+  - name: Bookmarks
+    description: Operations about bookmark
+  - name: Likes
+    description: Operations about like
+  - name: Searchs
+    description: Operations about search
+  - name: Conversations
+    description: Operations about conversation
+  - name: Medias
+    description: Operations about media
+paths:
+  # USERS
+  # /api/users/login
+  /api/users/login:
+    post:
+      tags:
+        - Users
+      description: User login
+      operationId: login
+      requestBody:
+        description: User login
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: abc1@gmail.com
+                password:
+                  type: string
+                  example: AbcAbc@1234123
+        required: true
+      responses:
+        '200':
+          description: Login Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successfully
+                  result:
+                    $ref: '#/components/schemas/SuccessAuthentication'
+        '422':
+          description: Validation error
+
+  # /api/users/register
+  /api/users/register:
+    post:
+      tags:
+        - Users
+      description: User Register
+      operationId: register
+      requestBody:
+        description: Register New User
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'MiPhat'
+                email:
+                  type: string
+                  example: 'phannguyenminhphat2+11@gmail.com'
+                password:
+                  type: string
+                  example: 'MinhPhat@1234'
+                confirm_password:
+                  type: string
+                  example: 'MinhPhat@1234'
+                date_of_birth:
+                  type: string
+                  format: ISO8601
+                  example: '2024-04-06T04:40:24.301Z'
+              required:
+                - name
+                - email
+                - password
+                - confirm_password
+                - date_of_birth
+      responses:
+        '201':
+          description: Register Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Register successfully, check email to verify your account
+                  result:
+                    allOf:
+                      - $ref: '#/components/schemas/SuccessAuthentication'
+                      - type: object
+                        properties:
+                          email_verify_token:
+                            type: string
+                            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+
+        '422':
+          description: Validation error
+
+  # /api/users/logout
+  /api/users/logout:
+    post:
+      tags:
+        - Users
+      description: User logout
+      operationId: logout
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: User logout
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        required: true
+      responses:
+        '200':
+          description: Logout Successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Used refresh token or not exist
+        '422':
+          description: Validation error
+
+  # /api/users/refresh-token
+  /api/users/refresh-token:
+    post:
+      tags:
+        - Users
+      description: Refresh token
+      operationId: refresh_token
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        required: true
+      responses:
+        '200':
+          description: Refresh token successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Refresh token successfully
+                  result:
+                    $ref: '#/components/schemas/SuccessNewAuthentication'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Used refresh token or not exist
+        '422':
+          description: Validation error
+
+  # /api/users/email_verify_token
+  /api/users/email_verify_token:
+    post:
+      tags:
+        - Users
+      description: Email verify token
+      operationId: email_verify_token
+      requestBody:
+        description: Email verify token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        required: true
+      responses:
+        '200':
+          description: Verify email successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verify successfully
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+                  refresh_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid signature
+        '422':
+          description: Validation error
+
+  # /api/users/resend-verify-email
+  /api/users/resend-verify-email:
+    post:
+      tags:
+        - Users
+      description: Resend email verify token
+      operationId: resend_verify_token
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Resend email verify successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Resend email verify successfully
+        '401':
+          description: Unauthorized
+
+  # /api/users/forgot-password
+  /api/users/forgot-password:
+    post:
+      tags:
+        - Users
+      description: Forgot password
+      operationId: forgot-password
+      requestBody:
+        description: Forgot password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: phannguyenminhphat2@gmail.com
+        required: true
+      responses:
+        '200':
+          description: Check email to reset password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Check email to reset password
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/verify-forgot-password
+  /api/users/verify-forgot-password:
+    post:
+      tags:
+        - Users
+      description: Verify forgot password token
+      operationId: verify-forgot-password
+      requestBody:
+        description: Verify forgot password token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        required: true
+      responses:
+        '200':
+          description: Verify forgot password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Verify forgot password successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/reset-password
+  /api/users/reset-password:
+    post:
+      tags:
+        - Users
+      description: Reset password
+      operationId: reset-password
+      requestBody:
+        description: Reset password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+                password:
+                  type: string
+                  example: Abc123456@Abc
+                confirm_password:
+                  type: string
+                  example: Abc123456@Abc
+        required: true
+      responses:
+        '200':
+          description: Reset password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset password successfully
+        '422':
+          description: Validation error
+
+  # /api/users/follow
+  /api/users/follow:
+    post:
+      tags:
+        - Users
+      description: Follow user
+      operationId: follow
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Follow user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  format: MongoId
+                  example: 66a87fda52afd7e21a8880e4
+        required: true
+      responses:
+        '200':
+          description: Follow user successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Follow user successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/twitter_circle
+  /api/users/twitter_circle:
+    post:
+      tags:
+        - Users
+      description: Add user in twitter circle
+      operationId: twitter_circle
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Add user twitter circle by username
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                twitter_circle:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - freshernodejs
+                    - username
+        required: true
+      responses:
+        '200':
+          description: Add twitter circle successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Add twitter circle successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/unfollow
+  /api/users/unfollow/{user_id}:
+    delete:
+      tags:
+        - Users
+      description: Unfollow user
+      operationId: unfollow
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user to unfollow
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 66a87fda52afd7e21a8880e4
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unfollow user successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unfollow user successfully
+        '401':
+          description: Unauthorized
+
+  # /api/users/me
+  /api/users/me:
+    # Get Me
+    get:
+      tags:
+        - Users
+      description: Get Me Info
+      operationId: getMe
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get me successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get me successfully
+                  result:
+                    $ref: '#/components/schemas/GetMe'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+    # Update me
+    patch:
+      tags:
+        - Users
+      description: Update me
+      operationId: updateMe
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Optional update me
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: 'MiPhat'
+                date_of_birth:
+                  type: string
+                  format: ISO8601
+                  example: '2024-04-06T04:40:24.301Z'
+                bio:
+                  type: string
+                  example: 'A short bio'
+                location:
+                  type: string
+                  example: 'VN'
+                website:
+                  type: string
+                  example: 'https://example.com'
+                username:
+                  type: string
+                  example: 'user66a342b74351ec702d33149d'
+                avatar:
+                  type: string
+                  example: 'https://example.com/avatar.jpg'
+                cover_photo:
+                  type: string
+                  example: 'https://example.com/cover_photo.jpg'
+              additionalProperties: false
+      responses:
+        '200':
+          description: Update my profile successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Update my profile successfully
+                  result:
+                    $ref: '#/components/schemas/UpdateMe'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/change-password
+  /api/users/change-password:
+    put:
+      tags:
+        - Users
+      description: Change password user
+      operationId: change-password
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Input old password and new password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: MinhPhat@12345
+                password:
+                  type: string
+                  example: MinhPhat@123456
+                confirm_password:
+                  type: string
+                  example: MinhPhat@123456
+        required: true
+      responses:
+        '200':
+          description: Change password successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Change password successfully
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/users/:username
+  /api/users/{username}:
+    # Get Me
+    get:
+      tags:
+        - Users
+      description: Get profile user
+      operationId: getProfile
+      parameters:
+        - name: username
+          in: path
+          description: username of user to get profile user
+          required: true
+          schema:
+            type: string
+            example: freshernodejs
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get my profile successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get my profile successfully
+                  result:
+                    $ref: '#/components/schemas/GetProfile'
+        '401':
+          description: Unauthorized
+
+  # TWEETS
+  # /api/tweets/create-tweet
+  /api/tweets/create-tweet:
+    post:
+      tags:
+        - Tweets
+      description: Create a new tweet
+      operationId: create-tweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Create a new tweet
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  $ref: '#/components/schemas/TweetType'
+                audience:
+                  $ref: '#/components/schemas/TweetAudienceType'
+                parent_id:
+                  type: string
+                  format: MongoId
+                  example: null
+                  description: The ID of the parent tweet if this is a reply or quote. Must be null for new tweets.
+                content:
+                  type: string
+                  example: 'loremasjdn asjdnjwjqp ajesm'
+                  description: The content of the tweet. Required for tweets of type Tweet, Comment, and QuoteTweet.
+                hashtags:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - '#Comment'
+                    - '#Nodejs'
+                    - '#JS'
+                  description: List of hashtags associated with the tweet.
+                mentions:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                    - 'user123'
+                    - 'fresherasdm'
+                  description: List of username mentions in the tweet.
+                medias:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        example: 'https://example.com/image.jpg'
+                        description: The URL of the media.
+                      type:
+                        type: integer
+                        example: 1
+                        description: The type of media. (1. Image, 2. Video, etc
+                  description: List of media objects attached to the tweet.
+      responses:
+        '200':
+          description: Tweet created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tweet created successfully
+                  result:
+                    $ref: '#/components/schemas/CreateTweet'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # /api/tweets/get-tweet/{tweet_id}
+  /api/tweets/get-tweet/{tweet_id}:
+    get:
+      tags:
+        - Tweets
+      description: Get tweet by ID. If the user is logged in, they can view the tweet. If not, they may receive a tweet if its audience:0 or an authorization error.
+      operationId: getTweetDetails
+      parameters:
+        - name: tweet_id
+          in: path
+          required: true
+          description: The ID of the tweet to retrieve
+          schema:
+            type: string
+            format: MongoId
+            example: 66a47a2753ecf1b4e16e380c
+      security:
+        - BearerAuth: [] # Security scheme is defined but not required for all requests
+      responses:
+        '200':
+          description: Get tweet details successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tweet retrieved successfully
+                  result:
+                    $ref: '#/components/schemas/Tweet'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbiden
+        '404':
+          description: Tweet not found
+        '422':
+          description: Validation error
+
+  # /api/tweets/get-tweet/{tweet_id}/children
+  /api/tweets/get-tweet/{tweet_id}/children:
+    get:
+      tags:
+        - Tweets
+      description: Get children tweets of a specific tweet
+      operationId: getTweetsChildren
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: path
+          description: The ID of the tweet to get children for
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: '66a47a2753ecf1b4e16e380c'
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 3
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 5
+        - name: tweet_type
+          in: query
+          description: Type of tweets to filter (retweets:1, quotes:3, comments:2)
+          required: true
+          schema:
+            example: 1
+      responses:
+        '200':
+          description: Get tweets children successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get tweets children successfully
+                  current_page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 5
+                  total:
+                    type: integer
+                    example: 20
+                  total_page:
+                    type: integer
+                    example: 5
+                  tweets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tweet'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Tweet not found
+
+  # /api/tweets/new-feeds/following
+  /api/tweets/new-feeds/following:
+    get:
+      tags:
+        - Tweets
+      description: Get tweets of following users
+      operationId: getTweetsFollowing
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 3
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Get new feeds following successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get new feeds following successfully
+                  current_page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 5
+                  total:
+                    type: integer
+                    example: 20
+                  total_page:
+                    type: integer
+                    example: 5
+                  tweets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tweet'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Tweet not found
+
+  # /api/tweets/new-feeds/all
+  /api/tweets/new-feeds/all:
+    get:
+      tags:
+        - Tweets
+      description: Get all new feed of tweets. Audience:0 && if Audience:1 => Check User in TwitterCircle
+      operationId: getAllNewFeeds
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 3
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Get all new feeds successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get all new feeds successfully
+                  current_page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 5
+                  total:
+                    type: integer
+                    example: 20
+                  total_page:
+                    type: integer
+                    example: 5
+                  tweets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tweet'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Tweet not found
+
+  # BOOKMARKS
+  # /api/bookmarks
+  /api/bookmarks:
+    post:
+      tags:
+        - Bookmarks
+      description: Bookmark tweet
+      operationId: bookmarkTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Bookmark tweet by tweet_id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: MongoId
+                  example: 66a47a2753ecf1b4e16e380c
+        required: true
+      responses:
+        '200':
+          description: Bookmark successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bookmark successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoId
+                        example: 66b71db95b6b8902d748cadf
+                      user_id:
+                        type: string
+                        format: MongoId
+                        example: 662363f121cf428af5ae33ef
+                      tweet_id:
+                        type: string
+                        format: MongoId
+                        example: 66a47a2753ecf1b4e16e380c
+                      create_at:
+                        type: string
+                        format: ISO8601
+                        example: 2024-08-10T07:58:49.398Z
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '422':
+          description: Validation error
+
+  # /api/bookmarks/{bookmark_id}
+  /api/bookmarks/{bookmark_id}:
+    delete:
+      tags:
+        - Bookmarks
+      description: Unbookmark by bookmark id
+      operationId: unbookmark/{bookmark_id}
+      parameters:
+        - name: bookmark_id
+          in: path
+          description: ID of the bookmark to unbookmark
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 66a24cc56aeb7062d7ff503f
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unbookmark successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unbookmark successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  # /api/bookmarks/tweets/{tweet_id}
+  /api/bookmarks/tweets/{tweet_id}:
+    delete:
+      tags:
+        - Bookmarks
+      description: Unbookmark by bookmark id
+      operationId: unbookmark/tweets/{tweet_id}
+      parameters:
+        - name: tweet_id
+          in: path
+          description: ID of the tweet to unbookmark
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 66a1ee1a1941cf3fe137a02f
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unbookmark successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unbookmark successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  # LIKES
+  # /api/likes
+  /api/likes:
+    post:
+      tags:
+        - Likes
+      description: Like tweet
+      operationId: likeTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Like tweet by tweet_id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: MongoId
+                  example: 66a47a2753ecf1b4e16e380c
+        required: true
+      responses:
+        '200':
+          description: Like successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Like successfully
+                  result:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        format: MongoId
+                        example: 66b71db95b6b8902d748cadf
+                      user_id:
+                        type: string
+                        format: MongoId
+                        example: 662363f121cf428af5ae33ef
+                      tweet_id:
+                        type: string
+                        format: MongoId
+                        example: 66a47a2753ecf1b4e16e380c
+                      create_at:
+                        type: string
+                        format: ISO8601
+                        example: 2024-08-10T07:58:49.398Z
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '422':
+          description: Validation error
+
+  # /api/likes/{like_id}
+  /api/likes/{like_id}:
+    delete:
+      tags:
+        - Likes
+      description: Unlike by like id
+      operationId: unlike/{like_id}
+      parameters:
+        - name: like_id
+          in: path
+          description: ID of the like to unlike
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 66a24cc56aeb7062d7ff503f
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Unlike successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unlike successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+
+  #SEARCH
+  # /api/search
+  /api/search:
+    get:
+      tags:
+        - Searchs
+      description: Perform an advanced search for tweets
+      operationId: advancedSearch
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 10
+        - name: content
+          in: query
+          description: The content to search for in tweets
+          required: true
+          schema:
+            type: string
+            example: 'Node.js'
+        - name: media_type
+          in: query
+          description: (Optional) type of media to filter (image, video)
+          required: false
+          schema:
+            type: string
+            example: image
+        - name: people_follow
+          in: query
+          description: (Optional) whether to filter tweets from people the user follows (on, off)
+          required: false
+          schema:
+            type: string
+            example: 'off'
+      responses:
+        '200':
+          description: Search tweets successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Search successfully'
+                  tweets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tweet'
+                  limit:
+                    type: integer
+                    example: 10
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 25
+                  total_page:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '422':
+          description: Validation error
+
+  # /api/search/search-users
+  /api/search/search-users:
+    get:
+      tags:
+        - Searchs
+      description: Search for users with various filters
+      operationId: searchUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 10
+        - name: name
+          in: query
+          description: The name of the user to search for
+          required: true
+          schema:
+            type: string
+            example: 'John Doe'
+        - name: location
+          in: query
+          description: The location of the user to filter
+          required: false
+          schema:
+            type: string
+            example: 'Ha Noi'
+        - name: people_follow
+          in: query
+          description: Filter users based on whether they are followed by the current user (on, off)
+          required: false
+          schema:
+            type: string
+            example: 'off'
+      responses:
+        '200':
+          description: Successfully retrieved search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Search users successfully'
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetProfile'
+                  limit:
+                    type: integer
+                    example: 10
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 25
+                  total_page:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  # CONVERSATIONS
+  # /api/conversations
+  /api/conversations/receivers/{receiver_id}:
+    get:
+      tags:
+        - Conversations
+      description: Get conversations between the logged-in user and the specified receiver.
+      operationId: getConversations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: receiver_id
+          in: path
+          required: true
+          description: The ID of the receiver user.
+          schema:
+            type: string
+            format: MongoId
+            example: 66121d175f6d87717e05d210
+        - name: page
+          in: query
+          required: true
+          description: The page number for pagination.
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: true
+          description: The number of conversations per page.
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Conversations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          format: MongoId
+                          example: 66b46b8100351dfb68dcacaf
+                        sender_id:
+                          type: string
+                          format: MongoId
+                          example: '66121c841f3f2318d4b477f0'
+                        receiver_id:
+                          type: string
+                          format: MongoId
+                          example: '66121d175f6d87717e05d210'
+                        content:
+                          type: string
+                          example: 'Hello, how are you?'
+                        created_at:
+                          type: string
+                          format: ISO8601
+                          example: '2024-08-01T12:34:56Z'
+                        updated_at:
+                          type: string
+                          format: ISO8601
+                          example: '2024-08-01T12:34:56Z'
+                  limit:
+                    type: integer
+                    example: 10
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 25
+                  total_page:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+        '404':
+          description: Not Found
+
+  # MEDIAS
+  # /api/medias/upload-image
+  /api/medias/upload-image:
+    post:
+      tags:
+        - Medias
+      description: Upload images to the server and store them in S3.
+      operationId: uploadImage
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Upload image file
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The image files to be uploaded.
+                  example: [file1.jpg, file2.jpg]
+      responses:
+        '200':
+          description: Images uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: 'Upload successfully'
+                    result:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                            example: 'https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/d1c17cdd2012b7d6114f66200.jpg'
+                            description: The URL of the uploaded image.
+                          type:
+                            $ref: '#/components/schemas/MediaType'
+                            example: 0
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+        '500':
+          description: Internal Server Error
+
+  # /api/medias/upload-video
+  /api/medias/upload-video:
+    post:
+      tags:
+        - Medias
+      description: Upload videos to the server and store them in S3.
+      operationId: uploadVideo
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Upload video file
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The video files to be uploaded.
+                  example: [file1.mp4, file2.mp4]
+      responses:
+        '200':
+          description: Videos uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: 'Upload successfully'
+                    result:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          url:
+                            type: string
+                            example: 'https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/videos/d1c17cdd2012b7d6114f66200.jpg'
+                            description: The URL of the uploaded video.
+                          type:
+                            $ref: '#/components/schemas/MediaType'
+                            example: 1
+        '401':
+          description: Unauthorized
+        '422':
+          description: Validation error
+        '500':
+          description: Internal Server Error
+
+# COMPONENT
+components:
+  schemas:
+    # User schemas
+    SuccessAuthentication:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        refresh_token:
+          type: string
+          example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+    SuccessNewAuthentication:
+      type: object
+      properties:
+        new_access_token:
+          type: string
+          example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+        new_refresh_token:
+          type: string
+          example: eyblksakmOmasQsnncjsjnsmwoa5wx7tYNS
+    GetMe:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 66a342b74351ec702d33149d
+        name:
+          type: string
+          example: MiPhat
+        email:
+          type: string
+          example: phannguyenminhphat14@gmail.com
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        created_at:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        updated_at:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        verify:
+          $ref: '#/components/schemas/UserVerifyStatus'
+        twitter_circle:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example:
+            - 662363f121cf428af5ae33ef
+            - 662363f121cf428af5ae33ef
+        bio:
+          type: string
+          example: link-bio
+        location:
+          type: string
+          example: VN
+        website:
+          type: string
+          example: link-website
+        username:
+          type: string
+          example: user66a342b74351ec702d33149d
+        avatar:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+        cover_photo:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+    UpdateMe:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 66a342b74351ec702d33149d
+        name:
+          type: string
+          example: MiPhat
+        email:
+          type: string
+          example: phannguyenminhphat14@gmail.com
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        created_at:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        updated_at:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        verify:
+          $ref: '#/components/schemas/UserVerifyStatus'
+        bio:
+          type: string
+          example: link-bio
+        location:
+          type: string
+          example: VN
+        website:
+          type: string
+          example: link-website
+        username:
+          type: string
+          example: user66a342b74351ec702d33149d
+        avatar:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+        cover_photo:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+    GetProfile:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 66a342b74351ec702d33149d
+        name:
+          type: string
+          example: MiPhat
+        email:
+          type: string
+          example: phannguyenminhphat14@gmail.com
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2024-04-06T04:40:24.301Z
+        bio:
+          type: string
+          example: link-bio
+        location:
+          type: string
+          example: VN
+        website:
+          type: string
+          example: link-website
+        username:
+          type: string
+          example: user66a342b74351ec702d33149d
+        avatar:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+        cover_photo:
+          type: string
+          example: https://twitter-clone-ap-southeast-1-1.s3.ap-southeast-1.amazonaws.com/images/c369ac68d60df0543a8d2cc00.jpg
+    UserVerifyStatus:
+      type: number
+      enum: [Unverified, Verified, Banned]
+      example: 0
+
+    # Tweet schemas
+    CreateTweet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: MongoId
+          example: '64b8a8c4e4b0caa7c8f5b2d9'
+        type:
+          $ref: '#/components/schemas/TweetType'
+        audience:
+          $ref: '#/components/schemas/TweetAudienceType'
+        parent_id:
+          type: string
+          format: MongoId
+          example: null
+        content:
+          type: string
+          example: 'uqlemdoqywo qyrudgs jqkdlasncur'
+        hashtags:
+          type: array
+          items:
+            type: string
+          example:
+            - '#Comment'
+            - '#Nodejs'
+        mentions:
+          type: array
+          items:
+            type: string
+          example:
+            - 'username'
+        medias:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: 'https://example.com/image.jpg'
+              type:
+                $ref: '#/components/schemas/MediaType'
+    MediaType:
+      type: number
+      enum: [Image, Video]
+      example: 0
+    TweetType:
+      type: number
+      enum: [Tweet, Retweet, Comment, QuoteTweet]
+      example: 0
+    TweetAudienceType:
+      type: number
+      enum: [Everyone, TwitterCircle]
+      example: 0
+    Tweet:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: '66a47a2753ecf1b4e16e380c'
+        user_id:
+          type: string
+          format: MongoId
+          example: '66a342b74351ec702d33149d'
+        type:
+          $ref: '#/components/schemas/TweetType'
+        audience:
+          $ref: '#/components/schemas/TweetAudienceType'
+        content:
+          type: string
+          example: 'Check mentions'
+        parent_id:
+          type: string
+          format: MongoId
+          example: null
+        hashtags:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: MongoId
+                example: '66a1ebb05d3d66b455ca926b'
+              name:
+                type: string
+                example: 'Nodejs'
+              create_at:
+                type: string
+                format: date-time
+                example: '2024-07-25T06:07:44.118Z'
+        mentions:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: MongoId
+                example: '66113c1c8f422b74211b1804'
+              name:
+                type: string
+                example: 'khong co ten nha'
+              username:
+                type: string
+                example: 'HelloNe'
+              email:
+                type: string
+                example: 'phannguyenminhphat@gmail.com'
+        medias:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                example: 'dasdsadasdasd'
+              type:
+                $ref: '#/components/schemas/MediaType'
+        guest_views:
+          type: integer
+          example: 10
+        user_views:
+          type: integer
+          example: 15
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-07-27T04:40:07.033Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2024-08-10T06:51:04.052Z'
+        bookmarks:
+          type: integer
+          example: 1
+        likes:
+          type: integer
+          example: 1
+        retweets_count:
+          type: integer
+          example: 1
+        comments_count:
+          type: integer
+          example: 11
+        quotes_count:
+          type: integer
+          example: 4
+        total_views:
+          type: integer
+          example: 24
+
+  # Security Schemes
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

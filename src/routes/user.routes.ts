@@ -196,7 +196,7 @@ userRoute.post(
  * Middlewares: accessTokenValidator, verifiedUserValidator, unfollowValidator
  */
 userRoute.delete(
-  '/follow/:user_id',
+  '/unfollow/:user_id',
   accessTokenValidator,
   verifiedUserValidator,
   unfollowValidator,

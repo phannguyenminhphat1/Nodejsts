@@ -33,7 +33,6 @@ export const loginController = async (req: Request, res: Response) => {
   })
   return res.json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
-    user,
     result
   })
 }
