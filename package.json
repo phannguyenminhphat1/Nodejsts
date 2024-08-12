@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=development nodemon",
+    "dev": "NODE_ENV=development npx nodemon",
     "dev:stag": "NODE_ENV=staging npx nodemon",
     "dev:prod": "NODE_ENV=production npx nodemon",
     "build": "rimraf ./dist && tsc && tsc-alias",

@@ -137,7 +137,7 @@ userRoute.post('/reset-password', resetPasswordValidator, wrapRequestHandlers(re
  * Header: { Authorization: Bearer <access_token> }
  * Middlewares: accessTokenValidator
  */
-userRoute.get('/me', accessTokenValidator, wrapRequestHandlers(getMeController))
+userRoute.get('/me', accessTokenValidator, getMeController)
 
 /**
  * Description: Update my profile
