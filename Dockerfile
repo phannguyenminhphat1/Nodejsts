@@ -3,7 +3,7 @@ FROM node:20.16-alpine3.19
 WORKDIR /app
 
 COPY package.json .
-COPY package-log.json .
+COPY package-lock.json .
 COPY ecosystem.config.js .
 COPY tsconfig.json .
 COPY .env.production .
