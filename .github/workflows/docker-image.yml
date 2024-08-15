@@ -32,8 +32,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           script: |
-            docker login -u ${{secrets.DOCKERHUB_USERNAME}} -p ${{secrets.DOCKERHUB_PASSWORD}}
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             docker pull phannguyenminhphat1/twitter-clone:v4
             docker stop twitter-clone
             docker rm twitter-clone
-            docker container run -dp 3001:3001 -name twitter-clone  phannguyenminhphat1/twitter-clone:v4
+            docker run -dp 3001:3001 -name twitter-clone  phannguyenminhphat1/twitter-clone:v4
