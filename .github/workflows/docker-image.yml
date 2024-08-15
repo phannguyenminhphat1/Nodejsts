@@ -36,4 +36,4 @@ jobs:
             docker pull phannguyenminhphat1/twitter-clone:v4
             docker stop twitter-clone
             docker rm twitter-clone
-            docker run -dp 3001:3001 -name twitter-clone  phannguyenminhphat1/twitter-clone:v4
+            docker run -dp 3001:3001 --name twitter-clone  phannguyenminhphat1/twitter-clone:v4
