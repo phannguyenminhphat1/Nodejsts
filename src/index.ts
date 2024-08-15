@@ -45,6 +45,7 @@ app.use(limiter)
 app.use(helmet())
 app.use(cors(corsOptions))
 app.use('/api', rootRoutes)
+
 app.use('/api-twitter-clone', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 app.use(defaultErrorHandler)
