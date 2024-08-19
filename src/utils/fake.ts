@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { ObjectId, WithId } from 'mongodb'
-import { MediaType, TweetAudience, TweetType, UserVerifyStatus } from '~/constants/enum'
+import { CountryLocation, MediaType, TweetAudience, TweetType, UserVerifyStatus } from '~/constants/enum'
 import { TweetRequestBody } from '~/models/requests/Tweet.requests'
 import { RegisterRequestBody } from '~/models/requests/User.requests'
 import { Follower } from '~/models/schemas/Followers.schema'
@@ -23,13 +23,18 @@ const MYID = new ObjectId('66121c841f3f2318d4b477f0')
 // Số lượng user được tạo, mỗi user sẽ mặc định tweet 2 cái
 const USER_COUNT = 100
 
+// Hàm để chọn ngẫu nhiên một phần tử từ mảng
+const getRandomLocation = (arr: CountryLocation[]) => arr[Math.floor(Math.random() * arr.length)]
+const countryLocations = Object.values(CountryLocation)
+
 const createRandomUser = () => {
   const user: RegisterRequestBody = {
     name: faker.internet.displayName(),
     email: faker.internet.email(),
     password: PASSWORD,
     confirm_password: PASSWORD,
-    date_of_birth: faker.date.past().toISOString()
+    date_of_birth: faker.date.past().toISOString(),
+    location: getRandomLocation(countryLocations as CountryLocation[])
   }
   return user
 }
