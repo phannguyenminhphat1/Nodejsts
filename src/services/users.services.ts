@@ -3,9 +3,9 @@ import { databaseService } from './database.services'
 import { LogoutRequestBody, RegisterRequestBody, UpdateMeRequestBody } from '~/models/requests/User.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken, verifyToken } from '~/utils/jwt'
-import { TokenType, UserVerifyStatus } from '~/constants/enum'
+import { CountryLocation, TokenType, UserVerifyStatus } from '~/constants/enum'
 import { RefreshToken } from '~/models/schemas/RefreshToken.schema'
-import { ObjectId } from 'mongodb'
+import { ObjectId, WithId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -81,6 +81,7 @@ class UsersServices {
       }
     })
   }
+
   private signAccessTokenAndRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
   }
@@ -167,7 +168,8 @@ class UsersServices {
         name: userInfo.name,
         date_of_birth: new Date().toISOString(),
         password,
-        confirm_password: password
+        confirm_password: password,
+        location: CountryLocation.Vietnam
       })
       return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified }
     }
@@ -393,7 +395,15 @@ class UsersServices {
     }
     return user
   }
+
   async followService(user_id: string, followed_user_id: string) {
+    if (user_id === followed_user_id) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.CAN_NOT_FOLLOW_YOURSELF,
+        status: HTTP_STATUS.UNPROCESSABLE_ENTITY
+      })
+    }
+
     const follower = await databaseService.followers.findOne({
       user_id: new ObjectId(user_id),
       followed_user_id: new ObjectId(followed_user_id)
@@ -511,6 +521,75 @@ class UsersServices {
     )
     return {
       message: USERS_MESSAGES.ADD_TWITTER_CIRCLE_SUCCESS
+    }
+  }
+
+  async recommendUsersService({ user_id, limit, page }: { user_id: string; page: number; limit: number }) {
+    const [current_user, followed_users] = await Promise.all([
+      databaseService.users.findOne({
+        _id: new ObjectId(user_id)
+      }),
+      databaseService.followers
+        .find({
+          user_id: new ObjectId(user_id)
+        })
+        .toArray()
+    ])
+    const current_user_location = (current_user as WithId<User>).location
+    const followed_ids = followed_users.map((item) => item.followed_user_id)
+    const [locationBasedUsers, commonFollowers] = await Promise.all([
+      await databaseService.users
+        .find({
+          _id: { $nin: followed_ids.concat(new ObjectId(user_id)) },
+          location: current_user_location
+        })
+        .toArray(),
+      await databaseService.followers
+        .aggregate<Follower>([
+          {
+            $match: {
+              followed_user_id: { $in: followed_ids },
+              user_id: { $nin: followed_ids.concat(new ObjectId(user_id)) }
+            }
+          }
+        ])
+        .toArray()
+    ])
+    const locationBasedUsersIds = locationBasedUsers.map((user) => user._id)
+    const commonFollowerIds = commonFollowers.map((follower) => follower.user_id)
+    const recommendedUsers = [...locationBasedUsersIds, ...commonFollowerIds]
+    const hashMap = {} as any
+    const hashMapRecommendedUsers = [] as ObjectId[]
+    for (let i = 0; i < recommendedUsers.length; i++) {
+      const element = recommendedUsers[i].toString()
+      if (!hashMap[element]) {
+        hashMap[element] = i
+        hashMapRecommendedUsers.push(new ObjectId(element))
+      }
+    }
+
+    const [usersRecommendations, countUsersRecommendations] = await Promise.all([
+      databaseService.users
+        .find({ _id: { $in: hashMapRecommendedUsers } })
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .project({
+          name: 1,
+          email: 1,
+          date_of_birth: 1,
+          bio: 1,
+          location: 1,
+          username: 1,
+          website: 1,
+          avatar: 1,
+          cover_photo: 1
+        })
+        .toArray(),
+      databaseService.users.countDocuments({ _id: { $in: hashMapRecommendedUsers } })
+    ])
+    return {
+      usersRecommendations,
+      total: countUsersRecommendations || 0
     }
   }
 }

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import { databaseService } from './database.services'
 import {
-  LocationType,
+  CountryLocation,
   MediaType,
   MediaTypeRequestQuery,
   PeopleFollowTypeRequestQuery,
@@ -318,7 +318,7 @@ export class SearchServices {
     page: number
     user_id: string
     name: string
-    location?: LocationType
+    location?: CountryLocation
     people_follow?: PeopleFollowTypeRequestQuery
   }) {
     const current_user_id = new ObjectId(user_id)
@@ -327,9 +327,17 @@ export class SearchServices {
         $search: name
       }
     }
-    // if (location) {
-    //   console.log(location)
-    // }
+    if (location) {
+      const commonLocation = await databaseService.users
+        .find({
+          location
+        })
+        .toArray()
+      const ids = commonLocation.map((item) => item._id)
+      matchStage['_id'] = {
+        $in: ids
+      }
+    }
     if (people_follow && people_follow === PeopleFollowTypeRequestQuery.Following) {
       const followed_user_id = await databaseService.followers
         .find({
@@ -377,11 +385,7 @@ export class SearchServices {
       databaseService.users
         .aggregate([
           {
-            $match: {
-              $text: {
-                $search: name
-              }
-            }
+            $match: matchStage
           },
           {
             $count: 'total'

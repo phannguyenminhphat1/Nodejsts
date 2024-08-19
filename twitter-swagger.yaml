@@ -2,15 +2,15 @@ openapi: 3.0.3
 info:
   title: Swagger Twitter-Clone
   description: |-
-    This is a sample Twitter Clone Server based on the OpenAPI 3.0 specification. This project replicates some key features of Twitter, including tweet creation, image upload, and user management. You can explore and interact with the API to understand its capabilities and help us enhance it further.
-    For more information, visit [https://twitter-clone.example.com](https://twitter-clone.example.com). We are continuously working to improve the API and add new functionalities. contact:
-    email: apiteam@swagger.io
+    This is a sample Twitter Clone Server based on the OpenAPI 3.0 specification. You can explore and interact with the API to understand its capabilities and help us enhance it further.
+    For more information, visit [https://github.com/phannguyenminhphat1/Nodejsts.git](https://github.com/phannguyenminhphat1/Nodejsts.git). We are continuously working to improve the API and add new functionalities. contact:
+    email: phannguyenminhphat1@gmail.com
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.11
 servers:
-  - url: http://localhost:8080
+  - url: https://minhphat.io.vn
 tags:
   - name: Users
     description: Operations about user
@@ -26,6 +26,8 @@ tags:
     description: Operations about conversation
   - name: Medias
     description: Operations about media
+  - name: Notifications
+    description: Operations about notification
 paths:
   # USERS
   # /api/users/login
@@ -96,12 +98,15 @@ paths:
                   type: string
                   format: ISO8601
                   example: '2024-04-06T04:40:24.301Z'
+                location:
+                  $ref: '#/components/schemas/CountryLocation'
               required:
                 - name
                 - email
                 - password
                 - confirm_password
                 - date_of_birth
+                - location
       responses:
         '201':
           description: Register Successfully
@@ -556,8 +561,7 @@ paths:
                   type: string
                   example: 'A short bio'
                 location:
-                  type: string
-                  example: 'VN'
+                  $ref: '#/components/schemas/CountryLocation'
                 website:
                   type: string
                   example: 'https://example.com'
@@ -662,6 +666,62 @@ paths:
                     example: Get my profile successfully
                   result:
                     $ref: '#/components/schemas/GetProfile'
+        '401':
+          description: Unauthorized
+
+  # /api/users/random/recommend-users
+  /api/users/random/recommend-users:
+    # Get users recommendations
+    get:
+      tags:
+        - Users
+      summary: Get user recommendations
+      description: Retrieve user recommendations based on location and common followers.
+      operationId: recommend-users
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 3
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 5
+      responses:
+        '200':
+          description: Successful response with user recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get user recommendations successfully
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetProfile'
+                  current_page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 5
+                  total:
+                    type: integer
+                    example: 6
+                  total_page:
+                    type: integer
+                    example: 2
         '401':
           description: Unauthorized
 
@@ -1096,6 +1156,60 @@ paths:
         '404':
           description: Not found
 
+  # /api/bookmarks/get-bookmarks
+  /api/bookmarks/get-bookmarks:
+    get:
+      tags:
+        - Bookmarks
+      description: Get list bookmarks
+      operationId: getBookmarks
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 10
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get bookmarks successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get bookmarks successfully
+                  bookmarks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bookmark'
+                  limit:
+                    type: integer
+                    example: 10
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 25
+                  total_page:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
+
   # LIKES
   # /api/likes
   /api/likes:
@@ -1188,6 +1302,60 @@ paths:
           description: Unauthorized
         '404':
           description: Not found
+
+  # /api/likes/get-likes
+  /api/likes/get-likes:
+    get:
+      tags:
+        - Likes
+      description: Get list likes
+      operationId: getLikes
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 10
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Get likes successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get likes successfully
+                  likes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Like'
+                  limit:
+                    type: integer
+                    example: 10
+                  current_page:
+                    type: integer
+                    example: 1
+                  total:
+                    type: integer
+                    example: 25
+                  total_page:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
 
   #SEARCH
   # /api/search
@@ -1305,8 +1473,7 @@ paths:
           description: The location of the user to filter
           required: false
           schema:
-            type: string
-            example: 'Ha Noi'
+            $ref: '#/components/schemas/CountryLocation'
         - name: people_follow
           in: query
           description: Filter users based on whether they are followed by the current user (on, off)
@@ -1547,6 +1714,46 @@ paths:
         '500':
           description: Internal Server Error
 
+  # NOTIFICATIONS
+  # /api/notifications/get-notifications
+  /api/notifications/get-notifications:
+    get:
+      tags:
+        - Notifications
+      description: Retrieve a list of notifications for the user
+      operationId: getNotifications
+      parameters:
+        - name: page
+          in: query
+          description: The page number for pagination
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: The number of items per page for pagination
+          required: true
+          schema:
+            type: integer
+            example: 10
+        - name: status
+          in: query
+          description: The status of notifications (e.g read,unread)
+          required: false
+          schema:
+            type: string
+            example: read
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: A list of notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetNotificationsResponse'
+
 # COMPONENT
 components:
   schemas:
@@ -1608,8 +1815,7 @@ components:
           type: string
           example: link-bio
         location:
-          type: string
-          example: VN
+          $ref: '#/components/schemas/CountryLocation'
         website:
           type: string
           example: link-website
@@ -1653,8 +1859,7 @@ components:
           type: string
           example: link-bio
         location:
-          type: string
-          example: VN
+          $ref: '#/components/schemas/CountryLocation'
         website:
           type: string
           example: link-website
@@ -1688,8 +1893,7 @@ components:
           type: string
           example: link-bio
         location:
-          type: string
-          example: VN
+          $ref: '#/components/schemas/CountryLocation'
         website:
           type: string
           example: link-website
@@ -1706,6 +1910,204 @@ components:
       type: number
       enum: [Unverified, Verified, Banned]
       example: 0
+    CountryLocation:
+      type: string
+      enum:
+        - Afghanistan
+        - Albania
+        - Algeria
+        - Andorra
+        - Angola
+        - Argentina
+        - Armenia
+        - Australia
+        - Austria
+        - Azerbaijan
+        - Bahamas
+        - Bahrain
+        - Bangladesh
+        - Barbados
+        - Belarus
+        - Belgium
+        - Belize
+        - Benin
+        - Bhutan
+        - Bolivia
+        - Bosnia and Herzegovina
+        - Botswana
+        - Brazil
+        - Brunei
+        - Bulgaria
+        - Burkina Faso
+        - Burundi
+        - Cabo Verde
+        - Cambodia
+        - Cameroon
+        - Canada
+        - Central African Republic
+        - Chad
+        - Chile
+        - China
+        - Colombia
+        - Comoros
+        - Congo (Brazzaville)
+        - Congo (Kinshasa)
+        - Costa Rica
+        - Croatia
+        - Cuba
+        - Cyprus
+        - Czechia
+        - Denmark
+        - Djibouti
+        - Dominica
+        - Dominican Republic
+        - Ecuador
+        - Egypt
+        - El Salvador
+        - Equatorial Guinea
+        - Eritrea
+        - Estonia
+        - Eswatini
+        - Ethiopia
+        - Fiji
+        - Finland
+        - France
+        - Gabon
+        - Gambia
+        - Georgia
+        - Germany
+        - Ghana
+        - Greece
+        - Grenada
+        - Guatemala
+        - Guinea
+        - Guinea-Bissau
+        - Guyana
+        - Haiti
+        - Honduras
+        - Hungary
+        - Iceland
+        - India
+        - Indonesia
+        - Iran
+        - Iraq
+        - Ireland
+        - Israel
+        - Italy
+        - Jamaica
+        - Japan
+        - Jordan
+        - Kazakhstan
+        - Kenya
+        - Kiribati
+        - North Korea
+        - South Korea
+        - Kosovo
+        - Kuwait
+        - Kyrgyzstan
+        - Laos
+        - Latvia
+        - Lebanon
+        - Lesotho
+        - Liberia
+        - Libya
+        - Liechtenstein
+        - Lithuania
+        - Luxembourg
+        - Madagascar
+        - Malawi
+        - Malaysia
+        - Maldives
+        - Mali
+        - Malta
+        - Marshall Islands
+        - Mauritania
+        - Mauritius
+        - Mexico
+        - Micronesia
+        - Moldova
+        - Monaco
+        - Mongolia
+        - Montenegro
+        - Morocco
+        - Mozambique
+        - Myanmar
+        - Namibia
+        - Nauru
+        - Nepal
+        - Netherlands
+        - New Zealand
+        - Nicaragua
+        - Niger
+        - Nigeria
+        - North Macedonia
+        - Norway
+        - Oman
+        - Pakistan
+        - Palau
+        - Panama
+        - Papua New Guinea
+        - Paraguay
+        - Peru
+        - Philippines
+        - Poland
+        - Portugal
+        - Qatar
+        - Romania
+        - Russia
+        - Rwanda
+        - Saint Kitts and Nevis
+        - Saint Lucia
+        - Saint Vincent and the Grenadines
+        - Samoa
+        - San Marino
+        - Sao Tome and Principe
+        - Saudi Arabia
+        - Senegal
+        - Serbia
+        - Seychelles
+        - Sierra Leone
+        - Singapore
+        - Slovakia
+        - Slovenia
+        - Solomon Islands
+        - Somalia
+        - South Africa
+        - South Sudan
+        - Spain
+        - Sri Lanka
+        - Sudan
+        - Suriname
+        - Sweden
+        - Switzerland
+        - Syria
+        - Taiwan
+        - Tajikistan
+        - Tanzania
+        - Thailand
+        - Timor-Leste
+        - Togo
+        - Tonga
+        - Trinidad and Tobago
+        - Tunisia
+        - Turkey
+        - Turkmenistan
+        - Tuvalu
+        - Uganda
+        - Ukraine
+        - United Arab Emirates
+        - United Kingdom
+        - United States
+        - Uruguay
+        - Uzbekistan
+        - Vanuatu
+        - Vatican City
+        - Venezuela
+        - Vietnam
+        - Yemen
+        - Zambia
+        - Zimbabwe
+      example: 'Vietnam'
 
     # Tweet schemas
     CreateTweet:
@@ -1860,6 +2262,106 @@ components:
           type: integer
           example: 24
 
+    # Bookmark schemas
+    Bookmark:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: '66a490a81ca99baac2464a94'
+        user_id:
+          type: string
+          format: MongoId
+          example: '66a342b74351ec702d33149d'
+        create_at:
+          type: string
+          format: date-time
+          example: '2024-07-27T06:16:08.900Z'
+        tweet:
+          $ref: '#/components/schemas/Tweet'
+
+    # Like schemas
+    Like:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: '66a490a81ca99baac2464a94'
+        user_id:
+          type: string
+          format: MongoId
+          example: '66a342b74351ec702d33149d'
+        create_at:
+          type: string
+          format: date-time
+          example: '2024-07-27T06:16:08.900Z'
+        tweet:
+          $ref: '#/components/schemas/Tweet'
+
+    # Notification schemas
+    NotificationStatusType:
+      type: integer
+      enum:
+        - 0 # Unread
+        - 1 # Read
+    NotiType:
+      type: string
+      enum:
+        - 'like'
+        - 'bookmark'
+        - 'retweet'
+        - 'comment'
+        - 'quote'
+
+    Notification:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: '66bed4bbeee58c219a418202'
+        user_id:
+          type: string
+          format: MongoId
+          example: '66121c841f3f2318d4b477f0'
+        content:
+          type: string
+          example: 'khongconamenha was like your tweet'
+        created_at:
+          type: string
+          format: date-time
+          example: '2024-08-16T04:25:31.753Z'
+        status:
+          $ref: '#/components/schemas/NotificationStatusType'
+        type:
+          $ref: '#/components/schemas/NotiType'
+        tweet:
+          $ref: '#/components/schemas/Tweet'
+
+    GetNotificationsResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'Get notifications successfully'
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        limit:
+          type: integer
+          example: 5
+        current_page:
+          type: integer
+          example: 1
+        total:
+          type: integer
+          example: 3
+        total_page:
+          type: integer
+          example: 1
   # Security Schemes
   securitySchemes:
     BearerAuth:

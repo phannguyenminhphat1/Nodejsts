@@ -1,7 +1,7 @@
 import express from 'express'
-import { likeTweetController, unlikeController } from '~/controllers/likes.controllers'
+import { getLikesController, likeTweetController, unlikeController } from '~/controllers/likes.controllers'
 import { likeIdValidator } from '~/middlewares/likes.middlewares'
-import { tweetIdValidator } from '~/middlewares/tweets.middlewares'
+import { paginationValidator, tweetIdValidator } from '~/middlewares/tweets.middlewares'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandlers } from '~/utils/handlers'
 const likesRoutes = express.Router()
@@ -35,5 +35,19 @@ likesRoutes.delete(
   verifiedUserValidator,
   likeIdValidator,
   wrapRequestHandlers(unlikeController)
+)
+
+/**
+ * Description: Get list likes by user
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Middlewares: verifiedUserValidator, accessTokenValidator,paginationValidator
+ */
+likesRoutes.get(
+  '/get-likes',
+  accessTokenValidator,
+  verifiedUserValidator,
+  paginationValidator,
+  wrapRequestHandlers(getLikesController)
 )
 export default likesRoutes

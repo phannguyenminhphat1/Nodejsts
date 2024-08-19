@@ -1,5 +1,5 @@
 import { PaginationRequestQuery } from './Tweet.requests'
-import { LocationType, MediaTypeRequestQuery, PeopleFollowTypeRequestQuery } from '~/constants/enum'
+import { CountryLocation, MediaTypeRequestQuery, PeopleFollowTypeRequestQuery } from '~/constants/enum'
 
 export interface SearchRequestQuery extends PaginationRequestQuery {
   content: string
@@ -13,6 +13,6 @@ export interface SearchHashtagQuery extends PaginationRequestQuery {
 
 export interface SearchUserQuery extends PaginationRequestQuery {
   name: string
-  location: LocationType
+  location: CountryLocation
   people_follow: PeopleFollowTypeRequestQuery
 }

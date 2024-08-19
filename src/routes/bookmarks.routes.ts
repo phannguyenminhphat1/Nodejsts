@@ -1,11 +1,12 @@
 import express from 'express'
 import {
   bookmarkTweetController,
+  getBookmarksController,
   unbookmarkController,
   unBookmarkTweetController
 } from '~/controllers/bookmarks.controllers'
 import { bookmarkIdValidator } from '~/middlewares/bookmarks.middlewares'
-import { tweetIdValidator } from '~/middlewares/tweets.middlewares'
+import { paginationValidator, tweetIdValidator } from '~/middlewares/tweets.middlewares'
 import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandlers } from '~/utils/handlers'
 const bookmarksRoutes = express.Router()
@@ -56,6 +57,20 @@ bookmarksRoutes.delete(
   verifiedUserValidator,
   bookmarkIdValidator,
   wrapRequestHandlers(unbookmarkController)
+)
+
+/**
+ * Description: Get list bookmarks by user
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Middlewares: verifiedUserValidator, accessTokenValidator
+ */
+bookmarksRoutes.get(
+  '/get-bookmarks',
+  accessTokenValidator,
+  verifiedUserValidator,
+  paginationValidator,
+  wrapRequestHandlers(getBookmarksController)
 )
 
 export default bookmarksRoutes

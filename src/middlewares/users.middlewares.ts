@@ -10,7 +10,7 @@ import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validate'
 import { ObjectId } from 'mongodb'
 import { TokenPayload } from '~/models/requests/User.requests'
-import { UserVerifyStatus } from '~/constants/enum'
+import { CountryLocation, UserVerifyStatus } from '~/constants/enum'
 import { Request, Response, NextFunction, RequestHandler } from 'express'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
@@ -217,7 +217,13 @@ export const registerValidator = validate(
       },
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
-      date_of_birth: dateOfBirthSchema
+      date_of_birth: dateOfBirthSchema,
+      location: {
+        isIn: {
+          options: [Object.values(CountryLocation)],
+          errorMessage: USERS_MESSAGES.INVALID_COUNTRY_LOCATION
+        }
+      }
     },
     ['body']
   )
@@ -404,16 +410,9 @@ export const updateMeValidator = validate(
       },
       location: {
         optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_STRING
-        },
-        trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 200
-          },
-          errorMessage: USERS_MESSAGES.LOCATION_LENGTH
+        isIn: {
+          options: [Object.values(CountryLocation)],
+          errorMessage: USERS_MESSAGES.INVALID_COUNTRY_LOCATION
         }
       },
       website: {

@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { TokenType, UserVerifyStatus } from '~/constants/enum'
+import { CountryLocation, TokenType, UserVerifyStatus } from '~/constants/enum'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 export interface RegisterRequestBody {
@@ -8,6 +8,7 @@ export interface RegisterRequestBody {
   password: string
   confirm_password: string
   date_of_birth: string
+  location: CountryLocation
 }
 
 export interface LogoutRequestBody {
@@ -36,7 +37,7 @@ export interface UpdateMeRequestBody {
   name?: string
   date_of_birth?: string
   bio?: string
-  location?: string
+  location?: CountryLocation
   website?: string
   username?: string
   avatar?: string

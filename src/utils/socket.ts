@@ -13,7 +13,7 @@ import { Server as HttpServer } from 'http'
 const initSocket = (httpServer: HttpServer) => {
   const io = new Server(httpServer, {
     cors: {
-      origin: 'http://localhost:3000'
+      origin: 'https://minhphat.io.vn'
     }
   })
 

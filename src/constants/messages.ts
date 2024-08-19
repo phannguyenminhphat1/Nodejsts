@@ -76,7 +76,10 @@ export const USERS_MESSAGES = {
   TWITTER_CIRCLE_IS_REQUIRED: 'Twitter circle is required',
   TWITTER_CIRCLE_MUST_BE_AN_ARRAY: 'Twitter circle must be an array',
   ADD_TWITTER_CIRCLE_SUCCESS: 'Add twitter circle successfully',
-  CANNOT_ADD_YOURSELF: 'Cannot add yourself'
+  CANNOT_ADD_YOURSELF: 'Cannot add yourself',
+  INVALID_COUNTRY_LOCATION: 'Invalid country location',
+  CAN_NOT_FOLLOW_YOURSELF: 'Can not follow yourself',
+  GET_USER_RECOMMENDATIONS_SUCCESSFULLY: 'Get user recommendations successfully'
 } as const
 
 export const TWEETS_MESSAGES = {
@@ -112,14 +115,16 @@ export const BOOKMARK_MESSAGES = {
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
   UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully',
   INVALID_BOOKMARK_ID: 'Invalid bookmark id',
-  BOOKMARK_NOT_FOUND: 'Bookmark not found'
+  BOOKMARK_NOT_FOUND: 'Bookmark not found',
+  GET_BOOKMARKS_SUCCESSFULLY: 'Get bookmarks successfully'
 }
 
 export const LIKE_MESSAGES = {
   LIKE_SUCCESSFULLY: 'Like successfully',
   UNLIKE_SUCCESSFULLY: 'Unlike successfully',
   INVALID_LIKE_ID: 'Invalid like id',
-  LIKE_NOT_FOUND: 'Like not found'
+  LIKE_NOT_FOUND: 'Like not found',
+  GET_LIKES_SUCCESSFULLY: 'Get likes successfully'
 }
 
 export const SEARCH_MESSAGES = {
@@ -137,4 +142,9 @@ export const SEARCH_MESSAGES = {
 
 export const CONVERSATIONS_MESSAGES = {
   GET_CONVERSATIONS_SUCCESSFULLY: 'Get conversations successfully'
+}
+
+export const NOTIFICATIONS_MESSAGES = {
+  GET_NOTIFICATIONS_SUCCESSFULLY: 'Get notifications successfully',
+  INVALID_STATUS_TYPE: 'Invalid status type (read, unread)'
 }

@@ -8,8 +8,9 @@ import HashTag from '~/models/schemas/Hashtag.schema'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import User from '~/models/schemas/User.schema'
-import { TweetType } from '~/constants/enum'
+import { NotiType, TweetType } from '~/constants/enum'
 import { LookupStageAggregationsType, ProjecttionStageAggregationsType } from '~/models/Other'
+import notificationsServices from './notifications.services'
 
 export class TweetsService {
   private users_lookup: LookupStageAggregationsType = {
@@ -174,6 +175,27 @@ export class TweetsService {
     const tweet = await databaseService.tweets.findOne({
       _id: result.insertedId
     })
+    if ((tweet as Tweet).type === TweetType.Comment) {
+      await notificationsServices.saveNotifications({
+        user_id: user_id,
+        tweet_id: (tweet as Tweet).parent_id!.toString(),
+        type: NotiType.Comment
+      })
+    }
+    if ((tweet as Tweet).type === TweetType.QuoteTweet) {
+      await notificationsServices.saveNotifications({
+        user_id: user_id,
+        tweet_id: (tweet as Tweet).parent_id!.toString(),
+        type: NotiType.QuoteTweet
+      })
+    }
+    if ((tweet as Tweet).type === TweetType.Retweet) {
+      await notificationsServices.saveNotifications({
+        user_id: user_id,
+        tweet_id: (tweet as Tweet).parent_id!.toString(),
+        type: NotiType.Retweet
+      })
+    }
     return {
       message: TWEETS_MESSAGES.CREATE_TWEET_SUCCESSFULLY,
       tweet

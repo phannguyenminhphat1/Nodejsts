@@ -17,9 +17,11 @@ import {
   resetPasswordController,
   unfollowController,
   updateMeController,
-  verifyForgotPasswordController
+  verifyForgotPasswordController,
+  recommendUsersController
 } from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
+import { paginationValidator } from '~/middlewares/tweets.middlewares'
 import {
   accessTokenValidator,
   changePasswordValidator,
@@ -233,6 +235,21 @@ userRoute.post(
   verifiedUserValidator,
   twitterCircleValidator,
   wrapRequestHandlers(twitterCircleController)
+)
+
+/**
+ * Description: Recommend users to follow
+ * Path: /recommend-users
+ * Method: GET
+ * Header: { Authorization: Bearer <access_token> }
+ * Middlewares: accessTokenValidator, verifiedUserValidator,paginationValidator
+ */
+userRoute.get(
+  '/random/recommend-users',
+  accessTokenValidator,
+  verifiedUserValidator,
+  paginationValidator,
+  wrapRequestHandlers(recommendUsersController)
 )
 
 export default userRoute

@@ -22,6 +22,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enum'
 import { ErrorWithStatus } from '~/models/Errors'
 import { envConfig } from '~/constants/config'
+import { PaginationRequestQuery } from '~/models/requests/Tweet.requests'
 
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
@@ -204,4 +205,23 @@ export const twitterCircleController = async (
   const { twitter_circle } = req.body
   const result = await usersServices.twitterCircleService(user_id, twitter_circle)
   return res.json(result)
+}
+
+export const recommendUsersController = async (
+  req: Request<ParamsDictionary, any, any, PaginationRequestQuery>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const page = Number(req.query.page)
+  const limit = Number(req.query.limit)
+
+  const result = await usersServices.recommendUsersService({ user_id, page, limit })
+  return res.json({
+    message: USERS_MESSAGES.GET_USER_RECOMMENDATIONS_SUCCESSFULLY,
+    result: result.usersRecommendations,
+    current_page: page,
+    limit: limit,
+    total: result.total,
+    total_page: Math.ceil(result.total / limit)
+  })
 }

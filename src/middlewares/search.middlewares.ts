@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { checkSchema, ParamSchema } from 'express-validator'
-import { LocationType, MediaTypeRequestQuery, PeopleFollowTypeRequestQuery } from '~/constants/enum'
+import { CountryLocation, MediaTypeRequestQuery, PeopleFollowTypeRequestQuery } from '~/constants/enum'
 import { SEARCH_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { databaseService } from '~/services/database.services'
 import { validate } from '~/utils/validate'
@@ -67,8 +67,8 @@ export const searchUsersValidator = validate(
       location: {
         optional: true,
         isIn: {
-          options: [Object.values(LocationType)],
-          errorMessage: SEARCH_MESSAGES.INVALID_LOCATION + `Location must be in ${Object.values(LocationType)}`
+          options: [Object.values(CountryLocation)],
+          errorMessage: SEARCH_MESSAGES.INVALID_LOCATION
         }
       }
     },

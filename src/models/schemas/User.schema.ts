@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { UserVerifyStatus } from '~/constants/enum'
+import { CountryLocation, UserVerifyStatus } from '~/constants/enum'
 
 interface UserType {
   _id?: ObjectId
@@ -14,7 +14,7 @@ interface UserType {
   verify?: UserVerifyStatus
   twitter_circle?: string[]
   bio?: string
-  location?: string
+  location: CountryLocation
   website?: string
   username?: string
   avatar?: string
@@ -34,7 +34,7 @@ class User {
   verify: UserVerifyStatus
   twitter_circle: ObjectId[] // danh sách id của những người user này add vào circle
   bio: string // optional
-  location: string // optional
+  location: CountryLocation
   website: string // optional
   username: string // optional
   avatar: string // optional
@@ -52,7 +52,7 @@ class User {
     this.verify = user.verify || UserVerifyStatus.Unverified
     this.twitter_circle = user.twitter_circle ? user.twitter_circle.map((item) => new ObjectId(item)) : []
     this.bio = user.bio || ''
-    this.location = user.location || ''
+    this.location = user.location
     this.website = user.website || ''
     this.username = user.username || ''
     this.avatar = user.avatar || ''

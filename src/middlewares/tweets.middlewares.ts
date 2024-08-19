@@ -347,7 +347,7 @@ export const audienceValidator = async (req: Request, res: Response, next: NextF
       }
       // check user có nằm trong twitter circle hay không.
       const { user_id } = req.decoded_authorization as TokenPayload
-      const isInTwitterCircle = author.twitter_circle.some((user_id_circle) => user_id_circle.equals(user_id))
+      const isInTwitterCircle = author.twitter_circle?.some((user_id_circle) => user_id_circle.equals(user_id))
       if (!author._id.equals(user_id) && !isInTwitterCircle) {
         throw new ErrorWithStatus({
           message: TWEETS_MESSAGES.TWEET_IS_NOT_PUBLIC,

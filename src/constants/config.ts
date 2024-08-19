@@ -34,6 +34,7 @@ export const envConfig = {
   dbBookmarksCollection: process.env.DB_BOOKMARKS_COLLECTION as string,
   dbLikesCollection: process.env.DB_LIKES_COLLECTION as string,
   dbConversationsCollection: process.env.DB_CONVERSATIONS_COLLECTION as string,
+  dbNotificationsCollection: process.env.DB_NOTIFICATIONS_COLLECTION as string,
   passwordSecret: process.env.PASSWORD_SECRET as string,
   jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN as string,
   jwtSecretRefreshToken: process.env.JWT_SECRET_REFRESH_TOKEN as string,

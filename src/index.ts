@@ -45,9 +45,7 @@ app.use(limiter)
 app.use(helmet())
 app.use(cors(corsOptions))
 app.use('/api', rootRoutes)
-
 app.use('/api-twitter-clone', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
 app.use(defaultErrorHandler)
 // app.use('/api/static/video-stream', express.static(UPLOAD_VIDEO_DIR))
 // app.use('/static', express.static(path.resolve(UPLOAD_IMAGE_DIR)))
