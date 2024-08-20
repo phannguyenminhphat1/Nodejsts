@@ -2309,7 +2309,6 @@ components:
       enum:
         - unread
         - read
-
     NotificationStatusType:
       type: integer
       enum:
