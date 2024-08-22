@@ -15,7 +15,6 @@ import path from 'path'
 import { envConfig, isProduction } from './constants/config'
 import helmet from 'helmet'
 import { rateLimit } from 'express-rate-limit'
-
 databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
